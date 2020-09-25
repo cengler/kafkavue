@@ -4,8 +4,9 @@ import vuetify from './plugins/vuetify';
 import router from './router'
 import store from './store'
 
-createApp(App)
-  .use(vuetify)
-  .use(router)
-  .use(store)
-  .mount('#app')
+Vue.config.productionTip = false
+
+new Vue({
+  vuetify,
+  render: h => h(App)
+}).$mount('#app')

@@ -1,64 +1,60 @@
 <template>
-  <v-app id="inspire">
-    <v-navigation-drawer
-            v-model="drawer"
-            app
-            mini-variant
-            clipped
+  <v-app>
+    <v-app-bar
+      app
+      color="primary"
+      dark
     >
-      <v-list dense>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-view-dashboard</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Dashboard</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-cog</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Settings</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
+      <div class="d-flex align-center">
+        <v-img
+          alt="Vuetify Logo"
+          class="shrink mr-2"
+          contain
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+          transition="scale-transition"
+          width="40"
+        />
 
-    <v-app-bar app clipped-left>
-      <v-toolbar-title>Kafkavue</v-toolbar-title>
+        <v-img
+          alt="Vuetify Name"
+          class="shrink mt-1 hidden-sm-and-down"
+          contain
+          min-width="100"
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
+          width="100"
+        />
+      </div>
+
+      <v-spacer></v-spacer>
+
+      <v-btn
+        href="https://github.com/vuetifyjs/vuetify/releases/latest"
+        target="_blank"
+        text
+      >
+        <span class="mr-2">Latest Release</span>
+        <v-icon>mdi-open-in-new</v-icon>
+      </v-btn>
     </v-app-bar>
 
     <v-main>
       <router-view></router-view>
     </v-main>
-
-    <v-footer app>
-      <v-row>
-        <v-col class="text-left" cols="4">Kafkavue</v-col>
-        <v-col class="text-center" cols="4">©2020 - Christian Engler</v-col>
-        <v-col class="text-right" cols="4">Github</v-col>
-      </v-row>
-    </v-footer>
   </v-app>
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld';
+import HelloWorld from './components/HelloWorld';
 
 export default {
   name: 'App',
 
   components: {
-
+    HelloWorld,
   },
 
   data: () => ({
     //
   }),
-  created () {
-    this.$vuetify.theme.dark = true
-  },
 };
 </script>
