@@ -7,20 +7,12 @@
             clipped
     >
       <v-list dense>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-view-dashboard</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Dashboard</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link>
+        <v-list-item link to="/">
           <v-list-item-action>
             <v-icon>mdi-cog</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Settings</v-list-item-title>
+            <v-list-item-title>Setup</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -30,10 +22,9 @@
       <v-toolbar-title>Kafkavue</v-toolbar-title>
     </v-app-bar>
 
-    <v-main>
-      <v-container class="fill-height" fluid>
-      </v-container>
-    </v-main>
+    <v-content>
+      <router-view/>
+    </v-content>
 
     <v-footer app>
       <v-row>
@@ -43,23 +34,21 @@
       </v-row>
     </v-footer>
   </v-app>
+
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld';
-
-export default {
-  name: 'App',
-
-  components: {
-
-  },
-
-  data: () => ({
-    //
-  }),
-  created () {
-    this.$vuetify.theme.dark = true
-  },
-};
+  export default {
+    name: 'App',
+    components: {},
+    data: () => ({
+      //
+    }),
+    created() {
+      this.$vuetify.theme.dark = true
+    },
+  }
 </script>
+
+<style lang="scss">
+</style>
