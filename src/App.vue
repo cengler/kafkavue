@@ -43,7 +43,7 @@
     </v-navigation-drawer>
 
     <v-app-bar app>
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-btn icon @click="drawer = !drawer"><v-icon>fas fa-bars</v-icon></v-btn>
 
       <v-toolbar-title>Kafkavue</v-toolbar-title>
     </v-app-bar>
