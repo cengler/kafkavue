@@ -1,61 +1,37 @@
 <template>
-  <v-app>
-    <v-app-bar
+  <v-app id="inspire">
+    <v-navigation-drawer
+      v-model="drawer"
       app
-      color="primary"
-      dark
+      mini-variant
     >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
+      <!--  -->
+    </v-navigation-drawer>
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
+    <v-app-bar app>
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>fas fa-external-link-alt</v-icon>
-      </v-btn>
+      <v-toolbar-title>Kafkavue</v-toolbar-title>
     </v-app-bar>
 
     <v-main>
-      <HelloWorld/>
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
-
-export default Vue.extend({
+<script>
+export default {
   name: 'App',
-
-  components: {
-    HelloWorld
-  },
-
+  components: {},
   data: () => ({
-    //
-  })
-})
+    drawer: null
+  }),
+  created () {
+    this.$vuetify.theme.dark = true
+  }
+}
 </script>
+
+<style lang="scss">
+</style>
