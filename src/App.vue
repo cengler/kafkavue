@@ -6,6 +6,40 @@
       mini-variant
     >
       <!--  -->
+      <v-list dense>
+        <v-list-item link to="/search">
+          <v-list-item-action>
+            <v-icon>fas fa-search</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Search</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item link to="/nodes">
+          <v-list-item-action>
+            <v-icon>fas fa-server</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Nodes</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item link to="/consumers">
+          <v-list-item-action>
+            <v-icon>fas fa-user-friends</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Consumers</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item link to="/setup">
+          <v-list-item-action>
+            <v-icon>fas fa-cog</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Setup</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
     </v-navigation-drawer>
 
     <v-app-bar app>
