@@ -22,19 +22,26 @@ import { Vue, Component } from 'vue-property-decorator'
     topics: [],
     headers: [
       {
-        text: 'Name',
-        value: 'name'
+        text: 'Source',
+        value: 'c_source'
       }
     ]
   }),
   created () {
     console.log('create')
-    kafka.getTopics('sem-kafka-a-14.despexds.net:9092')
-      .then(data => {
-        console.log(data)
-        this.topics = data.map(a => ({ name: a }))
+    // kafka.getTopics('sem-kafka-a-14.despexds.net:9092')
+    //   .then(data => {
+    //     console.log(data)
+    //     this.topics = data.map(a => ({ name: a }))
+    //   })
+    //   .catch(e => console.log(e))
+    kafka.getMessages(['sem-kafka-a-14.despexds.net:9092'],
+      'caeycae',
+      'raw-event',
+      (topic, partition, message) => {
+        console.log(topic, partition, message.value.toString())
+        this.topics.push(JSON.parse(message.value.toString()))
       })
-      .catch(e => console.log(e))
   }
 })
 
