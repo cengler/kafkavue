@@ -1,18 +1,12 @@
-import { KafkaClient, MetadataResponse } from 'kafka-node'
+import { Kafka } from 'kafkajs'
 
 const getTopics = (hosts: string) => {
-  return new Promise((resolve, reject) => {
-    const client = new KafkaClient({ kafkaHost: hosts })
-    client.loadMetadataForTopics([], (err: string, results: MetadataResponse) => {
-      if (err) return reject(err)
-      const topics = Object
-        .entries(results[1].metadata)
-        .map(e => ({ topic: e[0], partitions: Object.keys(e[1]).length }))
-        .filter(e => !e.topic.startsWith('__'))
-      client.close()
-      resolve(topics)
-    })
+  const kafka = new Kafka({
+    clientId: 'my-app',
+    brokers: [hosts]
   })
+  return kafka.admin().listTopics()
+  // .then(ts => kafka.admin().fetchTopicMetadata({ topics: ts }))
 }
 
 export default {
