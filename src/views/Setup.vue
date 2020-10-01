@@ -1,22 +1,42 @@
 <template>
-  <div class="about">
-    <h1>Setup: {{topics}}</h1>
-  </div>
+  <v-container fluid>
+    <v-row>
+      <v-col cols="12">
+        <v-data-table
+          dense
+          :headers="headers"
+          :items="topics"
+        ></v-data-table>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
 import kafka from '../services/kafka'
-
-export default {
-  components: {},
+import { Vue, Component } from 'vue-property-decorator'
+@Component({
+  components: {
+  },
   data: () => ({
-    topics: null
+    topics: [],
+    headers: [
+      {
+        text: 'Name',
+        value: 'name'
+      }
+    ]
   }),
   created () {
+    console.log('create')
     kafka.getTopics('sem-kafka-a-14.despexds.net:9092')
       .then(data => {
-        this.topic = data
+        console.log(data)
+        this.topics = data.map(a => ({ name: a }))
       })
+      .catch(e => console.log(e))
   }
-}
+})
+
+export default class Setup extends Vue {}
 </script>
