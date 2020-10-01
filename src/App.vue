@@ -3,10 +3,18 @@
     <v-navigation-drawer
       v-model="drawer"
       app
-      mini-variant
     >
       <!--  -->
       <v-list dense>
+
+        <v-list-item tag="div">
+<!--          <v-list-item-avatar>-->
+<!--            <v-icon>fas fa-search</v-icon>-->
+<!--          </v-list-item-avatar>-->
+          <v-list-item-content><v-list-item-title>Kafkavue</v-list-item-title></v-list-item-content>
+        </v-list-item>
+        <v-divider/>
+
         <v-list-item link to="/search">
           <v-list-item-action>
             <v-icon>fas fa-search</v-icon>
@@ -43,14 +51,35 @@
     </v-navigation-drawer>
 
     <v-app-bar app>
-      <v-btn icon @click="drawer = !drawer"><v-icon>fas fa-bars</v-icon></v-btn>
-
-      <v-toolbar-title>Kafkavue</v-toolbar-title>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
+      <v-toolbar-title>{{ viewName }}</v-toolbar-title>
+<!--      <v-toolbar-title>Kafkavue</v-toolbar-title>-->
+      <v-spacer/>
+      <v-select
+        ma-5
+        :items="[]"
+        label="Kafka"
+        placeholder="Select a kafka"
+        item-text="name"
+        return-object
+        flat
+        solo-inverted
+        hide-details
+      />
     </v-app-bar>
 
     <v-main>
       <router-view />
     </v-main>
+
+    <v-footer app inset class="hidden-md-and-down">
+      <v-layout justify-center row wrap>
+        <span>Please, report errors to:
+          <a href="https://github.com/cengler/kafkavue/issues">Github issues</a>
+        </span>
+      </v-layout>
+    </v-footer>
+
   </v-app>
 </template>
 
@@ -63,9 +92,32 @@ export default {
   }),
   created () {
     this.$vuetify.theme.dark = true
+  },
+  computed: {
+    viewName () {
+      return this.$route.name
+    }
   }
 }
 </script>
 
-<style lang="scss">
+<style>
+.v-navigation-drawer {
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.v-navigation-drawer::-webkit-scrollbar {
+  display: none;
+}
+
+.v-application--is-ltr .v-list-item__icon:first-child, .v-application--is-ltr .v-list-item__action:first-child {
+  margin-right: 11px !important;
+}
+
+.v-list-item__action {
+  margin-top:8px;
+  margin-bottom:8px;
+}
 </style>
