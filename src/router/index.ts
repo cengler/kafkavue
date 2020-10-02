@@ -14,6 +14,11 @@ const routes: Array<RouteConfig> = [
     path: '/setup',
     name: 'Setup',
     component: () => import(/* webpackChunkName: "about" */ '../views/Setup.vue')
+  },
+  {
+    path: '/add',
+    name: 'Add Cluster',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Add.vue')
   }
 ]
 

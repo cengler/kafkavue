@@ -33,7 +33,20 @@ const getMessages = async (brokers: string[], groupId: string, topic: string, cb
   }, 10000)
 }
 
+const test = (brokersString: string) => {
+  const brokers = brokersString.split(',')
+  const kafka = new Kafka({
+    clientId: 'kafkavue',
+    brokers,
+    retry: {
+      retries: 1
+    }
+  })
+  return kafka.admin().connect()
+}
+
 export default {
   getTopics,
-  getMessages
+  getMessages,
+  test
 }

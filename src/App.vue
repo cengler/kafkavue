@@ -15,6 +15,15 @@
         </v-list-item>
         <v-divider/>
 
+        <v-list-item link to="/add">
+          <v-list-item-action>
+            <v-icon>fas fa-add</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Add</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
         <v-list-item link to="/search">
           <v-list-item-action>
             <v-icon>fas fa-search</v-icon>
