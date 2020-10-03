@@ -45,8 +45,19 @@ const test = (brokersString: string) => {
   return kafka.admin().connect()
 }
 
+const getBrokers = (brokers: string[]) => {
+  const kafka = new Kafka({
+    clientId: 'kafkavue',
+    brokers
+  })
+  return kafka.admin().describeCluster()
+    .then(result => {
+      return result.brokers
+    })
+}
 export default {
   getTopics,
   getMessages,
   test
+  getBrokers,
 }
