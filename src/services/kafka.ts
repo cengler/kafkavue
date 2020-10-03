@@ -4,13 +4,13 @@ import SnappyCodec from 'kafkajs-snappy'
 
 CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
 
-const getTopics = (hosts: string) => {
+const getTopics = (brokers: string[]) => {
   const kafka = new Kafka({
-    clientId: 'my-app',
-    brokers: [hosts]
+    clientId: 'kafkavue',
+    brokers
   })
   return kafka.admin().listTopics()
-  // .then(ts => kafka.admin().fetchTopicMetadata({ topics: ts }))
+    .then(ts => kafka.admin().fetchTopicMetadata({ topics: ts }))
 }
 
 const getMessages = async (brokers: string[], groupId: string, topic: string, cb: Function) => {
@@ -55,6 +55,7 @@ const getBrokers = (brokers: string[]) => {
       return result.brokers
     })
 }
+
 const getConsumers = (brokers: string[]) => {
   const kafka = new Kafka({
     clientId: 'kafkavue',
@@ -65,10 +66,11 @@ const getConsumers = (brokers: string[]) => {
       return result.groups
     })
 }
+
 export default {
   getTopics,
   getMessages,
-  test
+  test,
   getBrokers,
   getConsumers
 }

@@ -19,6 +19,21 @@ const routes: Array<RouteConfig> = [
     path: '/add',
     name: 'Add Cluster',
     component: () => import(/* webpackChunkName: "about" */ '../views/Add.vue')
+  },
+  {
+    path: '/brokers',
+    name: 'Brokers',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Brokers.vue')
+  },
+  {
+    path: '/topics',
+    name: 'Topics',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Topics.vue')
+  },
+  {
+    path: '/consumers',
+    name: 'Consumers',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Consumers.vue')
   }
 ]
 
