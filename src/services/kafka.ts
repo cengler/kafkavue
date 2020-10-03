@@ -55,9 +55,20 @@ const getBrokers = (brokers: string[]) => {
       return result.brokers
     })
 }
+const getConsumers = (brokers: string[]) => {
+  const kafka = new Kafka({
+    clientId: 'kafkavue',
+    brokers
+  })
+  return kafka.admin().listGroups()
+    .then(result => {
+      return result.groups
+    })
+}
 export default {
   getTopics,
   getMessages,
   test
   getBrokers,
+  getConsumers
 }
