@@ -15,29 +15,30 @@
         </v-list-item>
         <v-divider/>
 
-        <v-list-item link to="/add">
+<!--        <v-list-item link to="/add">-->
+<!--          <v-list-item-action>-->
+<!--            <v-icon>fas fa-add</v-icon>-->
+<!--          </v-list-item-action>-->
+<!--          <v-list-item-content>-->
+<!--            <v-list-item-title>Add</v-list-item-title>-->
+<!--          </v-list-item-content>-->
+<!--        </v-list-item>-->
+
+        <v-list-item link to="/brokers">
           <v-list-item-action>
-            <v-icon>fas fa-add</v-icon>
+            <v-icon>fas fa-user-secret</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Add</v-list-item-title>
+            <v-list-item-title>Brokers</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item link to="/search">
+        <v-list-item link to="/topics">
           <v-list-item-action>
-            <v-icon>fas fa-search</v-icon>
+            <v-icon>fas fa-stream</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Search</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link to="/nodes">
-          <v-list-item-action>
-            <v-icon>fas fa-server</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Nodes</v-list-item-title>
+            <v-list-item-title>Topics</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link to="/consumers">
@@ -48,14 +49,23 @@
             <v-list-item-title>Consumers</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link to="/setup">
+        <v-list-item link to="/search">
           <v-list-item-action>
-            <v-icon>fas fa-cog</v-icon>
+            <v-icon>fas fa-search</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Setup</v-list-item-title>
+            <v-list-item-title>Search</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+<!--        <v-list-item link to="/setup">-->
+<!--          <v-list-item-action>-->
+<!--            <v-icon>fas fa-cog</v-icon>-->
+<!--          </v-list-item-action>-->
+<!--          <v-list-item-content>-->
+<!--            <v-list-item-title>Setup</v-list-item-title>-->
+<!--          </v-list-item-content>-->
+<!--        </v-list-item>-->
       </v-list>
     </v-navigation-drawer>
 
@@ -64,6 +74,9 @@
       <v-toolbar-title>{{ viewName }}</v-toolbar-title>
 <!--      <v-toolbar-title>Kafkavue</v-toolbar-title>-->
       <v-spacer/>
+      <v-btn icon class="ml-2 mr-2" to="/add">
+        <v-icon class="fas fa-plus-circle"></v-icon>
+      </v-btn>
       <v-select
         ma-5
         :items="[]"
