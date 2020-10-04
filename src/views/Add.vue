@@ -48,6 +48,8 @@
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import kafka from '@/services/kafka'
+// import store from '../store';
+
 @Component
 export default class Add extends Vue {
   valid = false
@@ -65,7 +67,7 @@ export default class Add extends Vue {
 
   validate () {
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
-
+      // store.dispatch
     }
   }
 
