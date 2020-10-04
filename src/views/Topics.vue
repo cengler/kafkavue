@@ -38,7 +38,7 @@ import { Vue, Component } from 'vue-property-decorator'
   }),
   created () {
     this.loading = true
-    kafka.getTopics(['sem-kafka-a-14.despexds.net:9092'])
+    kafka.getTopics(['localhost:9092'])
       .then(topics => {
         console.log(topics)
         this.topics = topics.topics

@@ -35,7 +35,7 @@ import { Vue, Component } from 'vue-property-decorator'
   }),
   created () {
     this.loading = true
-    kafka.getConsumers(['sem-kafka-a-14.despexds.net:9092'])
+    kafka.getConsumers(['localhost:9092'])
       .then(consumers => {
         console.log(consumers)
         this.consumers = consumers

@@ -38,7 +38,7 @@ import { Vue, Component } from 'vue-property-decorator'
   }),
   created () {
     this.loading = true
-    kafka.getBrokers(['sem-kafka-a-14.despexds.net:9092'])
+    kafka.getBrokers(['localhost:9092'])
       .then(brokers => {
         this.brokers = brokers
         this.loading = false

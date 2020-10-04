@@ -1,6 +1,41 @@
 <template>
   <v-container fluid>
     <v-row>
+      <v-col cols="3">
+        <v-autocomplete
+          label="Topic"
+          placeholder="Select a topic"
+          :items="topics"
+          item-text="name"
+          />
+      </v-col>
+      <v-col cols="3">
+        <v-text-field
+          label="Filter"
+          placeholder="Add filter text"
+        />
+      </v-col>
+      <v-col cols="3">
+        <v-text-field
+          label="Columns"
+          placeholder=""
+        />
+      </v-col>
+      <v-col cols="3" class="d-flex align-end flex-column">
+        <v-row dense>
+          <v-btn color="error" small >
+            <v-icon>mdi-trash-can</v-icon>
+          </v-btn>
+          <v-btn color="primary" small>
+            <v-icon>mdi-play</v-icon>
+          </v-btn>
+          <v-btn color="primary" small >
+            <v-icon>mdi-stop</v-icon>
+          </v-btn>
+        </v-row>
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col cols="12">
         <v-data-table
           dense
@@ -35,7 +70,7 @@ import { Vue, Component } from 'vue-property-decorator'
     //     this.topics = data.map(a => ({ name: a }))
     //   })
     //   .catch(e => console.log(e))
-    kafka.getMessages(['sem-kafka-a-14.despexds.net:9092'],
+    kafka.getMessages(['localhost:9092'],
       'caeycae',
       'raw-event',
       (topic, partition, message) => {
@@ -45,5 +80,5 @@ import { Vue, Component } from 'vue-property-decorator'
   }
 })
 
-export default class Setup extends Vue {}
+export default class Search extends Vue {}
 </script>
