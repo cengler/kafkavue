@@ -87,6 +87,8 @@ export default class Add extends Vue {
   @Watch('bootstrapServersString')
   onPropertyChanged (value: string, oldValue: string) {
     this.result = ''
+    console.log(oldValue)
+    console.log(value)
   }
 }
 </script>
