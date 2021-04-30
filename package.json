@@ -10,7 +10,8 @@
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps"
+    "postuninstall": "electron-builder install-app-deps",
+    "preinstall": "npx npm-force-resolutions"
   },
   "main": "background.js",
   "dependencies": {
@@ -23,6 +24,7 @@
     "kafkajs": "^1.14.0",
     "kafkajs-snappy": "^1.1.0",
     "roboto-fontface": "*",
+    "ssri": "^8.0.1",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^8.4.2",
@@ -64,5 +66,8 @@
     "vue-cli-plugin-vuetify": "~2.4.0",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.3.0"
+  },
+  "resolutions": {
+    "ssri": "^8.0.1"
   }
 }
