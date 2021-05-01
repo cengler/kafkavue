@@ -48,6 +48,7 @@
 <script lang="ts">
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import kafka from '@/services/kafka'
+import Connection from '@/model/Connection'
 // import store from '../store';
 
 @Component
@@ -67,7 +68,8 @@ export default class Add extends Vue {
 
   validate () {
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
-      // store.dispatch
+      this.$store.dispatch('addConnection', new Connection(this.name, this.bootstrapServersString))
+      this.$router.push({ path: '/' })
     }
   }
 

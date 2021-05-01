@@ -79,15 +79,23 @@
       </v-btn>
       <v-select
         ma-5
-        :items="[]"
+        :items="this.$store.getters.connections"
         label="Kafka"
         placeholder="Select a kafka"
         item-text="name"
+        v-model="connection"
         return-object
         flat
         solo-inverted
         hide-details
-      />
+      >
+        <template v-slot:item="{ item }">
+          <span> {{ item.name }} {{item.boostrapServers}} </span>
+        </template>
+        <template v-slot:selection="{ item }">
+          <span> {{ item.name }} {{item.boostrapServers}} </span>
+        </template>
+      </v-select>
     </v-app-bar>
 
     <v-main>
@@ -118,6 +126,14 @@ export default {
   computed: {
     viewName () {
       return this.$route.name
+    },
+    connection: {
+      get () {
+        return this.$store.getters.connection
+      },
+      set (value) {
+        this.$store.commit('setSelectedConnection', value)
+      }
     }
   }
 }
