@@ -6,8 +6,12 @@ import vuetify from './plugins/vuetify'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@mdi/font/css/materialdesignicons.css'
+// @ts-ignore
+import JsonViewer from 'vue-json-viewer'
+import 'vue-json-viewer/style.css'
 
 Vue.config.productionTip = false
+Vue.use(JsonViewer)
 
 new Vue({
   router,

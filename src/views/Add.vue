@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator'
+import { Vue, Component } from 'vue-property-decorator'
 import kafka from '@/services/kafka'
 import Connection from '@/model/Connection'
 // import store from '../store';
@@ -84,11 +84,6 @@ export default class Add extends Vue {
         this.status = 'error'
         this.result = e
       })
-  }
-
-  @Watch('bootstrapServersString')
-  onPropertyChanged (value: string, oldValue: string) {
-    this.result = ''
   }
 }
 </script>

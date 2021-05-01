@@ -107,6 +107,9 @@ export default {
   }),
   created () {
     this.$vuetify.theme.dark = true
+    if (!this.connectionSelected) {
+      this.$router.push({ path: '/add' }) // TODO (cuando no hay ninguna)
+    }
   },
   computed: {
     viewName () {
