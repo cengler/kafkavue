@@ -7,8 +7,16 @@
           :headers="headers"
           :items="topics"
           :loading="loading"
+          :search="search"
           :items-per-page="100"
         >
+          <template v-slot:top>
+            <v-text-field
+              v-model="search"
+              label="Search"
+              class="mx-4"
+            ></v-text-field>
+          </template>
           <template v-slot:item.partitions="{ item }">
               {{ item.partitions.length }}
           </template>
@@ -24,6 +32,7 @@ import { Vue, Component, Watch } from 'vue-property-decorator'
 @Component
 export default class Brokers extends Vue {
   topics = []
+  search = ''
   loading = true
   headers = [
     {
