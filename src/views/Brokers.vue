@@ -7,7 +7,16 @@
           :loading="loading"
           :headers="headers"
           :items="brokers"
-        ></v-data-table>
+          :search="search"
+        >
+          <template v-slot:top>
+            <v-text-field
+              v-model="search"
+              label="Search"
+              class="mx-4"
+            ></v-text-field>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
   </v-container>
@@ -19,6 +28,7 @@ import { Vue, Component, Watch } from 'vue-property-decorator'
 @Component
 export default class Brokers extends Vue {
   brokers = []
+  search = ''
   loading = true
   headers = [
     {

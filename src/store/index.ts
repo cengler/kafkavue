@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Connection from '@/model/Connection'
+import electronStore from "@/store/electronStore";
 
 Vue.use(Vuex)
 
@@ -10,7 +11,7 @@ interface State {
 }
 
 const state: State = {
-  connections: Array<Connection>(),
+  connections: electronStore.getConnections(),
   selectedConnection: null
 }
 
