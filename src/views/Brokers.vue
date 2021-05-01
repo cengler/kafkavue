@@ -15,37 +15,49 @@
 
 <script>
 import kafka from '../services/kafka'
-import { Vue, Component } from 'vue-property-decorator'
-@Component({
-  components: {},
-  data: () => ({
-    brokers: [],
-    loading: true,
-    headers: [
-      {
-        text: 'Host',
-        value: 'host'
-      },
-      {
-        text: 'Node ID',
-        value: 'nodeId'
-      },
-      {
-        text: 'Port',
-        value: 'port'
-      }
-    ]
-  }),
+import { Vue, Component, Watch } from 'vue-property-decorator'
+@Component
+export default class Brokers extends Vue {
+  brokers = []
+  loading = true
+  headers = [
+    {
+      text: 'Host',
+      value: 'host'
+    },
+    {
+      text: 'Node ID',
+      value: 'nodeId'
+    },
+    {
+      text: 'Port',
+      value: 'port'
+    }
+  ]
+
   created () {
+    this.load()
+  }
+
+  load () {
+    this.brokers = []
     this.loading = true
-    const brokers = this.$store.getters.connection.boostrapServers
+    const brokers = this.connection.boostrapServers
     kafka.getBrokers(brokers)
       .then(brokers => {
         this.brokers = brokers
         this.loading = false
       })
   }
-})
 
-export default class Brokers extends Vue {}
+  get connection () {
+    return this.$store.getters.connection
+  }
+
+  @Watch('connection')
+  onPropertyChanged () {
+    this.load()
+  }
+}
+
 </script>
