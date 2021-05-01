@@ -6,18 +6,25 @@
           label="Topic"
           placeholder="Select a topic"
           :items="topics"
+          dense
+          hide-details
           item-text="name"
           />
       </v-col>
       <v-col cols="3">
         <v-text-field
           label="Filter"
+          dense
+          hide-details
           placeholder="Add filter text"
         />
       </v-col>
       <v-col cols="3">
         <v-text-field
           label="Columns"
+          dense
+          hide-details
+          v-model="columnsString"
           placeholder=""
         />
       </v-col>
@@ -26,7 +33,7 @@
           <v-btn color="error" small >
             <v-icon>mdi-trash-can</v-icon>
           </v-btn>
-          <v-btn color="primary" small>
+          <v-btn color="primary" small @click="loadMessages">
             <v-icon>mdi-play</v-icon>
           </v-btn>
           <v-btn color="primary" small >
@@ -40,7 +47,7 @@
         <v-data-table
           dense
           :headers="headers"
-          :items="topics"
+          :items="messages"
         ></v-data-table>
       </v-col>
     </v-row>
@@ -49,36 +56,57 @@
 
 <script>
 import kafka from '../services/kafka'
-import { Vue, Component } from 'vue-property-decorator'
-@Component({
-  components: {
-  },
-  data: () => ({
-    topics: [],
-    headers: [
-      {
-        text: 'Source',
-        value: 'c_source'
-      }
-    ]
-  }),
-  created () {
-    console.log('create')
-    // kafka.getTopics('sem-kafka-a-14.despexds.net:9092')
-    //   .then(data => {
-    //     console.log(data)
-    //     this.topics = data.map(a => ({ name: a }))
-    //   })
-    //   .catch(e => console.log(e))
-    kafka.getMessages(['localhost:9092'],
-      'caeycae',
+import { Vue, Component, Watch } from 'vue-property-decorator'
+@Component
+export default class Brokers extends Vue {
+  topics = []
+  messages = []
+  columnsString = ''
+  loading = true
+  headers = []
+
+  loadMessages () {
+    this.messages = []
+    const brokers = this.connection.boostrapServers
+    kafka.getMessages(brokers,
+      'caeycae1', // TODO random
       'raw-event',
       (topic, partition, message) => {
-        console.log(topic, partition, message.value.toString())
-        this.topics.push(JSON.parse(message.value.toString()))
+        // console.log(topic, partition, message.value.toString())
+        this.messages.push(JSON.parse(message.value.toString()))
       })
   }
-})
 
-export default class Search extends Vue {}
+  created () {
+    this.loadTopics()
+  }
+
+  loadTopics () {
+    this.topics = []
+    this.loading = true
+    const brokers = this.connection.boostrapServers
+    kafka.getTopics(brokers)
+      .then(topics => {
+        this.topics = topics.topics
+        this.loading = false
+      })
+  }
+
+  get connection () {
+    return this.$store.getters.connection
+  }
+
+  @Watch('connection')
+  onPropertyChanged () {
+    this.loadTopics()
+  }
+
+  @Watch('columnsString')
+  onColumnsChange () {
+    this.headers = this.columnsString
+      .split(',')
+      .map(h => ({ text: h, value: h }))
+  }
+}
+
 </script>
