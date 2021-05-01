@@ -27,6 +27,7 @@ export default new Vuex.Store({
   mutations: {
     addConnection (state, connection: Connection) {
       state.connections.push(connection)
+      state.selectedConnection = connection
     },
     setSelectedConnection (state, connection: Connection) {
       state.selectedConnection = connection

@@ -14,58 +14,16 @@
           <v-list-item-content><v-list-item-title>Kafkavue</v-list-item-title></v-list-item-content>
         </v-list-item>
         <v-divider/>
-
-<!--        <v-list-item link to="/add">-->
-<!--          <v-list-item-action>-->
-<!--            <v-icon>fas fa-add</v-icon>-->
-<!--          </v-list-item-action>-->
-<!--          <v-list-item-content>-->
-<!--            <v-list-item-title>Add</v-list-item-title>-->
-<!--          </v-list-item-content>-->
-<!--        </v-list-item>-->
-
-        <v-list-item link to="/brokers">
-          <v-list-item-action>
-            <v-icon>fas fa-user-secret</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Brokers</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item link to="/topics">
-          <v-list-item-action>
-            <v-icon>fas fa-stream</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Topics</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link to="/consumers">
-          <v-list-item-action>
-            <v-icon>fas fa-user-friends</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Consumers</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link to="/search">
-          <v-list-item-action>
-            <v-icon>fas fa-search</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Search</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-<!--        <v-list-item link to="/setup">-->
-<!--          <v-list-item-action>-->
-<!--            <v-icon>fas fa-cog</v-icon>-->
-<!--          </v-list-item-action>-->
-<!--          <v-list-item-content>-->
-<!--            <v-list-item-title>Setup</v-list-item-title>-->
-<!--          </v-list-item-content>-->
-<!--        </v-list-item>-->
+        <template v-for="menu in menuItems">
+          <v-list-item link :to="menu.link" :key="menu.link" :disabled="!connectionSelected">
+            <v-list-item-action>
+              <v-icon>{{menu.icon}}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{menu.title}}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
       </v-list>
     </v-navigation-drawer>
 
@@ -118,7 +76,34 @@ export default {
   name: 'App',
   components: {},
   data: () => ({
-    drawer: null
+    drawer: null,
+    menuItems: [
+      {
+        icon: 'fas fa-user-secret',
+        link: '/brokers',
+        title: 'Brokers'
+      },
+      {
+        icon: 'fas fa-stream',
+        link: '/topics',
+        title: 'Topics'
+      },
+      {
+        icon: 'fas fa-user-friends',
+        link: '/consumers',
+        title: 'Consumers'
+      },
+      {
+        icon: 'fas fa-search',
+        link: '/search',
+        title: 'Search'
+      },
+      {
+        icon: 'fas fa-cog',
+        link: '/setup',
+        title: 'Setup'
+      }
+    ]
   }),
   created () {
     this.$vuetify.theme.dark = true
@@ -134,6 +119,9 @@ export default {
       set (value) {
         this.$store.commit('setSelectedConnection', value)
       }
+    },
+    connectionSelected () {
+      return this.$store.getters.connection != null
     }
   }
 }
