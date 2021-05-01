@@ -49,6 +49,7 @@
           dense
           :headers="headers"
           :items="messages"
+          item-key="key"
           :expanded.sync="expanded"
           show-expand
         >
@@ -78,7 +79,7 @@ export default class Brokers extends Vue {
   topic = null
   expanded = []
   messages = []
-  columnsString = 'topic,partition'
+  columnsString = 'topic,partition,key'
   loading = true
   headers = []
 
@@ -90,8 +91,10 @@ export default class Brokers extends Vue {
       this.topic,
       (topic, partition, message) => {
         // console.log(topic, partition, message.value.toString())
+        console.log(message)
         const m = JSON.parse(message.value.toString())
         m.topic = topic
+        m.key = message.key
         m.partition = partition
         this.messages.push(m)
       })
