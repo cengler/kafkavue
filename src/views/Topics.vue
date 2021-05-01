@@ -7,6 +7,7 @@
           :headers="headers"
           :items="topics"
           :loading="loading"
+          :items-per-page="100"
         >
           <template v-slot:item.partitions="{ item }">
               {{ item.partitions.length }}
@@ -19,33 +20,45 @@
 
 <script>
 import kafka from '../services/kafka'
-import { Vue, Component } from 'vue-property-decorator'
-@Component({
-  components: {},
-  data: () => ({
-    topics: [],
-    loading: true,
-    headers: [
-      {
-        text: 'Name',
-        value: 'name'
-      },
-      {
-        text: 'Partitions',
-        value: 'partitions'
-      }
-    ]
-  }),
+import { Vue, Component, Watch } from 'vue-property-decorator'
+@Component
+export default class Brokers extends Vue {
+  topics = []
+  loading = true
+  headers = [
+    {
+      text: 'Name',
+      value: 'name'
+    },
+    {
+      text: 'Partitions',
+      value: 'partitions'
+    }
+  ]
+
   created () {
+    this.load()
+  }
+
+  load () {
+    this.topics = []
     this.loading = true
-    kafka.getTopics(['localhost:9092'])
+    const brokers = this.connection.boostrapServers
+    kafka.getTopics(brokers)
       .then(topics => {
-        console.log(topics)
         this.topics = topics.topics
         this.loading = false
       })
   }
-})
 
-export default class Topics extends Vue {}
+  get connection () {
+    return this.$store.getters.connection
+  }
+
+  @Watch('connection')
+  onPropertyChanged () {
+    this.load()
+  }
+}
+
 </script>
