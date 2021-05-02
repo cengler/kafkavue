@@ -16,6 +16,7 @@
         <v-text-field
           label="Filter"
           dense
+          v-model="filter"
           hide-details
           placeholder="Add filter text"
         />
@@ -69,7 +70,7 @@
   </v-container>
 </template>
 
-<script>
+<script type="ts">
 import kafka from '../services/kafka'
 import { Vue, Component, Watch } from 'vue-property-decorator'
 
@@ -77,26 +78,34 @@ import { Vue, Component, Watch } from 'vue-property-decorator'
 export default class Brokers extends Vue {
   topics = []
   topic = null
+  filter = null
   expanded = []
   messages = []
   columnsString = 'topic,partition,key'
   loading = true
   headers = []
 
+  match (rawMessage, filter) {
+    if (!filter) return true
+    const words = filter.split(/\s/)
+    return words.every(w => rawMessage.includes(w))
+  }
+
   loadMessages () {
     this.messages = []
     const brokers = this.connection.boostrapServers
     kafka.getMessages(brokers,
-      'caeycae' + Date.now().toString(), // TODO random
+      'caeycae' + Date.now().toString(), // TODO random, parece que no se borran
       this.topic,
       (topic, partition, message) => {
-        // console.log(topic, partition, message.value.toString())
-        console.log(message)
-        const m = JSON.parse(message.value.toString())
-        m.topic = topic
-        m.key = message.key
-        m.partition = partition
-        this.messages.push(m)
+        const rawMessage = message.value.toString()
+        if (this.match(rawMessage, this.filter)) {
+          const m = JSON.parse()
+          m.topic = topic
+          m.key = message.key
+          m.partition = partition
+          this.messages.push(m)
+        }
       })
   }
 
