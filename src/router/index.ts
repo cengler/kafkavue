@@ -16,9 +16,10 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Search.vue')
   },
   {
-    path: '/add',
-    name: 'Add Cluster',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Add.vue')
+    path: '/edit',
+    name: 'Edit',
+    props: true,
+    component: () => import(/* webpackChunkName: "about" */ '../views/Edit.vue')
   },
   {
     path: '/brokers',

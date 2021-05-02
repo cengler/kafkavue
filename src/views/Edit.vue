@@ -7,13 +7,13 @@
             ref="form"
             v-model="valid"
           >
-            <v-card-title>New Connection</v-card-title>
+            <v-card-title>Connection</v-card-title>
 
             <v-card-text>
               <v-text-field clearable label="Cluster Name"
                             v-model="name"
                             placeholder="add cluster name"
-                            :rules="[notEmpty]"
+                            :rules="[notEmpty, duplicatedName]"
               ></v-text-field>
               <v-text-field clearable label="Bootstrap Servers"
                             v-model="bootstrapServersString"
@@ -28,8 +28,8 @@
                      @click="testConnection">
                 Test Connection
               </v-btn>
-              <v-btn color="success" text @click="validate">
-                Add
+              <v-btn color="success" text @click="save">
+                {{ id ? 'Update' : 'Create' }}
               </v-btn>
             </v-card-actions>
 
@@ -49,15 +49,24 @@
 import { Vue, Component } from 'vue-property-decorator'
 import kafka from '@/services/kafka'
 import Connection from '@/model/Connection'
-// import store from '../store';
 
 @Component
-export default class Add extends Vue {
-  valid = false
+export default class Edit extends Vue {
+  id = 0
   name = ''
-  bootstrapServersString = 'localhost:9092'
+  bootstrapServersString = ''
+  valid = false
   result = ''
   status = 'success'
+
+  created () {
+    if (this.$route.params.id) {
+      this.id = Number.parseInt(this.$route.params.id)
+    }
+    this.name = this.$route.params.name
+    this.bootstrapServersString = this.$route.params.bootstrapServersString
+  }
+
   validHost (v: string) {
     return v && v.match(/^.+:[0-9]+/) ? true : 'bootstrap servers list must be valid'
   }
@@ -66,9 +75,17 @@ export default class Add extends Vue {
     return v ? true : 'name must have a value'
   }
 
-  validate () {
+  duplicatedName (v: string) {
+    const cs: Connection[] = this.$store.getters.connections
+    const names: string[] = cs
+      .filter(c => c.id !== this.id)
+      .map(c => c.name)
+    return !names.includes(v) ? true : 'name already exists'
+  }
+
+  save () {
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
-      this.$store.dispatch('addConnection', new Connection(this.name, this.bootstrapServersString))
+      this.$store.dispatch('saveConnection', new Connection(this.id, this.name, this.bootstrapServersString))
       this.$router.push({ path: '/' })
     }
   }
