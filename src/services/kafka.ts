@@ -3,10 +3,12 @@ import { Consumer, Kafka, CompressionTypes, CompressionCodecs } from 'kafkajs'
 import SnappyCodec from 'kafkajs-snappy'
 
 CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
+const clientId = 'kafkavue' // TODO ver si es fijo
+let consumer: Consumer
 
 const getTopics = (brokers: string[]) => {
   const kafka = new Kafka({
-    clientId: 'kafkavue',
+    clientId,
     brokers
   })
   return kafka.admin().listTopics()
@@ -15,16 +17,17 @@ const getTopics = (brokers: string[]) => {
 
 const getMessages = async (brokers: string[], groupId: string, topic: string, cb: Function) => {
   const kafka = new Kafka({
-    clientId: 'kafkavue',
+    clientId,
     brokers
   })
-  const consumer: Consumer = kafka.consumer({
+  consumer = kafka.consumer({
     groupId
   })
   await consumer.connect()
-  await consumer.subscribe({ topic })
+  await consumer.subscribe({ topic, fromBeginning: true })
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
+      console.log('------------------->')
       cb(topic, partition, message)
     }
   })
@@ -33,10 +36,16 @@ const getMessages = async (brokers: string[], groupId: string, topic: string, cb
   }, 10000)
 }
 
+const stopConsumer = () => {
+  if (consumer) {
+    consumer.stop()
+  }
+}
+
 const test = (brokersString: string) => {
   const brokers = brokersString.split(',')
   const kafka = new Kafka({
-    clientId: 'kafkavue',
+    clientId,
     brokers,
     retry: {
       retries: 1
@@ -47,7 +56,7 @@ const test = (brokersString: string) => {
 
 const getBrokers = (brokers: string[]) => {
   const kafka = new Kafka({
-    clientId: 'kafkavue',
+    clientId,
     brokers
   })
   return kafka.admin().describeCluster()
@@ -58,7 +67,7 @@ const getBrokers = (brokers: string[]) => {
 
 const getConsumers = (brokers: string[]) => {
   const kafka = new Kafka({
-    clientId: 'kafkavue',
+    clientId,
     brokers
   })
   return kafka.admin().listGroups()
