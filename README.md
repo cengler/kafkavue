@@ -2,28 +2,28 @@
 
 ## Project setup
 ```
-yarn install
+npm i
 ```
 
 ### Compiles and hot-reloads for development
 ```
-yarn serve
+npm run electron:serve
 ```
 
 ### Compiles and minifies for production
 ```
-yarn build
+npm run electron:build
 ```
 
-### Run your unit tests
+## Kafka Docker for dev
 ```
-yarn test:unit
-```
-
-### Lints and fixes files
-```
-yarn lint
+docker-compose up 
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Persistent configuration files
+
+### Mac
+```
+cat ~/Library/Application\ Support/kafkavue/config.json
+```
+
