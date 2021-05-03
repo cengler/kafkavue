@@ -10,11 +10,17 @@
           :search="search"
         >
           <template v-slot:top>
-            <v-text-field
-              v-model="search"
-              label="Search"
-              class="mx-4"
-            ></v-text-field>
+            <v-toolbar flat>
+              <v-text-field
+                v-model="search"
+                label="Search"
+                hide-details
+              ></v-text-field>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="load">
+                <v-icon class="fas fa-sync"></v-icon>
+              </v-btn>
+            </v-toolbar>
           </template>
         </v-data-table>
       </v-col>
