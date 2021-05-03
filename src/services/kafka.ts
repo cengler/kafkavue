@@ -1,6 +1,7 @@
-import { Consumer, Kafka, CompressionTypes, CompressionCodecs } from 'kafkajs'
+import { CompressionCodecs, CompressionTypes, Consumer, Kafka } from 'kafkajs'
 // @ts-ignore
 import SnappyCodec from 'kafkajs-snappy'
+import Status, { StatusCode } from '@/model/Status'
 
 CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
 const clientId = 'kafkavue' // TODO ver si es fijo
@@ -27,7 +28,6 @@ const getMessages = async (brokers: string[], groupId: string, topic: string, cb
   await consumer.subscribe({ topic, fromBeginning: true })
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
-      console.log('------------------->')
       cb(topic, partition, message)
     }
   })
@@ -36,9 +36,13 @@ const getMessages = async (brokers: string[], groupId: string, topic: string, cb
   }, 10000)
 }
 
-const stopConsumer = () => {
+const stopConsumer = (): Promise<Status> => {
   if (consumer) {
-    consumer.stop()
+    return consumer.stop()
+      .then(() => new Status('Stopped ok', StatusCode.OK))
+      .catch(e => new Status(`Error stopping consumer ${e}`, StatusCode.ERROR))
+  } else {
+    return Promise.resolve(new Status('No consumer to stop', StatusCode.ERROR))
   }
 }
 
@@ -81,5 +85,6 @@ export default {
   getMessages,
   test,
   getBrokers,
-  getConsumers
+  getConsumers,
+  stopConsumer
 }

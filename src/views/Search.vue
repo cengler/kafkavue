@@ -32,13 +32,13 @@
       </v-col>
       <v-col cols="3" class="d-flex align-end flex-column">
         <v-row dense>
-          <v-btn color="error" small :disabled="this.messages.length === 0">
+          <v-btn color="error" small :disabled="this.messages.length === 0" @click="clearMessages">
             <v-icon>mdi-trash-can</v-icon>
           </v-btn>
-          <v-btn color="primary" small @click="loadMessages" :disabled="!topicSelected">
+          <v-btn color="primary" small :disabled="!topicSelected" @click="loadMessages" >
             <v-icon>mdi-play</v-icon>
           </v-btn>
-          <v-btn color="primary" small :disabled="!topicSelected">
+          <v-btn color="primary" small :disabled="!topicSelected" @click="stopConsumer">
             <v-icon>mdi-stop</v-icon>
           </v-btn>
         </v-row>
@@ -46,6 +46,10 @@
     </v-row>
     <v-row>
       <v-col cols="12">
+        <v-alert v-if="statusMessage" :type="statusType" dismissible>
+          {{ statusMessage }}
+        </v-alert>
+        <!-- fade-alert :message="statusMessage" :type="statusType" dismissible :duration="2" / -->
         <v-data-table
           dense
           :headers="headers"
@@ -72,7 +76,8 @@
 
 <script type="ts">
 import kafka from '../services/kafka'
-import { Vue, Component, Watch } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
+import { StatusCode } from '@/model/Status'
 
 @Component
 export default class Brokers extends Vue {
@@ -84,6 +89,8 @@ export default class Brokers extends Vue {
   columnsString = 'topic,partition,key'
   loading = true
   headers = []
+  statusMessage = null
+  statusType = 'success'
 
   match (rawMessage, filter) {
     if (!filter) return true
@@ -132,6 +139,18 @@ export default class Brokers extends Vue {
 
   get topicSelected () {
     return this.topic != null
+  }
+
+  clearMessages () {
+    this.messages = []
+  }
+
+  stopConsumer () {
+    kafka.stopConsumer()
+      .then(s => {
+        this.statusMessage = s.message
+        this.statusType = s.code = StatusCode.ERROR ? 'error' : 'success'
+      })
   }
 
   @Watch('connection')
