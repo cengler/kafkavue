@@ -25,7 +25,7 @@ const getMessages = async (brokers: string[], groupId: string, topic: string, cb
     groupId
   })
   await consumer.connect()
-  await consumer.subscribe({ topic, fromBeginning: true })
+  await consumer.subscribe({ topic }) // fromBeginning: true
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
       cb(topic, partition, message)

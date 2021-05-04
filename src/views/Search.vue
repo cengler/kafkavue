@@ -107,13 +107,14 @@ export default class Brokers extends Vue {
       (topic, partition, message) => {
         const rawMessage = message.value.toString()
         if (this.match(rawMessage, this.filter)) {
-          const m = JSON.parse()
+          const m = JSON.parse(rawMessage)
           m.topic = topic
-          m.key = message.key
+          m.key = message.key.toString()
           m.partition = partition
           this.messages.push(m)
         }
-      })
+      }).then(e => console.log('iiiiiii', e))
+      .catch(e => console.log('>>>>>>>', e))
   }
 
   created () {
