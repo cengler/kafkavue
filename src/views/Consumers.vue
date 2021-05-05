@@ -29,7 +29,6 @@
 </template>
 
 <script>
-import kafka from '../services/kafka'
 import { Vue, Component, Watch } from 'vue-property-decorator'
 @Component
 export default class Brokers extends Vue {
@@ -55,11 +54,11 @@ export default class Brokers extends Vue {
     this.consumers = []
     this.loading = true
     const brokers = this.connection.boostrapServers
-    kafka.getConsumers(brokers)
+    /* kafka.getConsumers(brokers)
       .then(consumers => {
         this.consumers = consumers
         this.loading = false
-      })
+      }) */
   }
 
   get connection () {

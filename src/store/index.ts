@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Connection from '@/model/Connection'
-import electronStore from '@/store/electronStore'
+// import electronStore from '@/store/electronStore'
 
 Vue.use(Vuex)
 
@@ -11,8 +11,8 @@ interface State {
 }
 
 const state: State = {
-  connections: electronStore.getConnections(),
-  selectedConnection: electronStore.getConnection()
+  connections: [], // TODO electronStore.getConnections(),
+  selectedConnection: null // TODO electronStore.getConnection()
 }
 
 export default new Vuex.Store({
@@ -38,11 +38,11 @@ export default new Vuex.Store({
         state.connections.push(connection)
       }
       state.selectedConnection = connection
-      electronStore.setConnections(state.connections)
+      // TODO electronStore.setConnections(state.connections)
     },
     setSelectedConnection (state, connection: Connection) {
       state.selectedConnection = connection
-      electronStore.setConnection(state.selectedConnection)
+      // TODO electronStore.setConnection(state.selectedConnection)
     },
     deleteConnection (state, connection: Connection) {
       const c: Connection | undefined = state.connections.find(c => c.id === connection.id)
@@ -51,9 +51,9 @@ export default new Vuex.Store({
       }
       if (state.selectedConnection && state.selectedConnection.id === connection.id) {
         state.selectedConnection = null
-        electronStore.setConnection(null)
+        // TODO electronStore.setConnection(null)
       }
-      electronStore.setConnections(state.connections)
+      // TODO electronStore.setConnections(state.connections)
     }
   },
   actions: {

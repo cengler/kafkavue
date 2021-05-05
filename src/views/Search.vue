@@ -75,7 +75,6 @@
 </template>
 
 <script type="ts">
-import kafka from '../services/kafka'
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { StatusCode } from '@/model/Status'
 
@@ -101,7 +100,7 @@ export default class Brokers extends Vue {
   loadMessages () {
     this.messages = []
     const brokers = this.connection.boostrapServers
-    kafka.getMessages(brokers,
+    /* kafka.getMessages(brokers,
       'caeycae' + Date.now().toString(), // TODO random, parece que no se borran
       this.topic,
       (topic, partition, message) => {
@@ -114,7 +113,7 @@ export default class Brokers extends Vue {
           this.messages.push(m)
         }
       }).then(e => console.log('iiiiiii', e))
-      .catch(e => console.log('>>>>>>>', e))
+      .catch(e => console.log('>>>>>>>', e)) */
   }
 
   created () {
@@ -127,11 +126,11 @@ export default class Brokers extends Vue {
     this.topic = null
     this.loading = true
     const brokers = this.connection.boostrapServers
-    kafka.getTopics(brokers)
+    /* kafka.getTopics(brokers)
       .then(topics => {
         this.topics = topics.topics
         this.loading = false
-      })
+      }) */
   }
 
   get connection () {
@@ -147,11 +146,11 @@ export default class Brokers extends Vue {
   }
 
   stopConsumer () {
-    kafka.stopConsumer()
+    /* kafka.stopConsumer()
       .then(s => {
         this.statusMessage = s.message
         this.statusType = s.code = StatusCode.ERROR ? 'error' : 'success'
-      })
+      }) */
   }
 
   @Watch('connection')

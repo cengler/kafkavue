@@ -47,7 +47,6 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import kafka from '@/services/kafka'
 import Connection from '@/model/Connection'
 
 @Component
@@ -92,7 +91,7 @@ export default class Edit extends Vue {
 
   testConnection () {
     this.result = ''
-    kafka.test(this.bootstrapServersString)
+    /* kafka.test(this.bootstrapServersString)
       .then(() => {
         this.status = 'success'
         this.result = 'Connection Success'
@@ -100,7 +99,7 @@ export default class Edit extends Vue {
       .catch(e => {
         this.status = 'error'
         this.result = e
-      })
+      }) */
   }
 }
 </script>
