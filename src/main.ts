@@ -9,7 +9,6 @@ import '@mdi/font/css/materialdesignicons.css'
 // @ts-ignore
 import JsonViewer from 'vue-json-viewer'
 import 'vue-json-viewer/style.css'
-import server from './server/server'
 
 Vue.config.productionTip = false
 Vue.use(JsonViewer)

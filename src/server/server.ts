@@ -2,15 +2,18 @@ import express from 'express'
 import bodyParser from 'body-parser'
 // @ts-ignore
 import cors from 'cors'
-import hc from './routes/health-check'
+import hc from '@/server/routes/health-check'
 
 const startServer = () => {
+
   console.log('Start')
+
   const PORT = process.env.PORT || 3000
+
   process.on('unhandledRejection', (reason, p) => {
-    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason)
+    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
     // application specific logging, throwing an error, or other logic here
-  })
+  });
 
   const app = express()
   app.use(cors())

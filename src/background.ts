@@ -10,8 +10,6 @@ import server from './server/server'
 // be closed automatically when the JavaScript object is garbage collected.
 let win: BrowserWindow | null
 
-server.startServer()
-
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
@@ -93,3 +91,4 @@ if (isDevelopment) {
   }
 }
 
+server.startServer()
