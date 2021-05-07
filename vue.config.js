@@ -4,9 +4,8 @@ module.exports = {
   ],
   pluginOptions: {
     electronBuilder: {
-      // nodeIntegration: true,
-      // externals: ['clipboard'],
-      mainProcessWatch: ['src/server/*']
+      nodeIntegration: true,
+      externals: ['clipboard']
     }
   }
 }
