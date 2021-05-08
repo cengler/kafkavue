@@ -7,5 +7,8 @@ module.exports = {
       nodeIntegration: true,
       externals: ['clipboard']
     }
+  },
+  configureWebpack: {
+    devtool: 'source-map'
   }
 }
