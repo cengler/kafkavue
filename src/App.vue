@@ -93,6 +93,11 @@ export default class App extends Vue {
       title: 'Search'
     },
     {
+      icon: 'fas fa-paper-plane',
+      link: '/sender',
+      title: 'Sender'
+    },
+    {
       icon: 'fas fa-cog',
       link: '/',
       title: 'Setup'

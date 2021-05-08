@@ -35,6 +35,11 @@ const routes: Array<RouteConfig> = [
     path: '/consumers',
     name: 'Consumers',
     component: () => import(/* webpackChunkName: "about" */ '../views/Consumers.vue')
+  },
+  {
+    path: '/sender',
+    name: 'Sender',
+    component: () => import(/* webpackChunkName: "sender" */ '../views/Sender.vue')
   }
 ]
 

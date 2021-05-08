@@ -14,38 +14,29 @@
       </v-col>
       <v-col cols="2">
         <v-text-field
-          label="Filter"
+          label="Time"
           dense
-          v-model="filter"
+          v-model="time"
           hide-details
-          placeholder="Add filter text"
-        />
-      </v-col>
-      <v-col cols="2">
-        <v-text-field
-          label="Columns"
-          dense
-          hide-details
-          v-model="columnsString"
-          placeholder=""
+          placeholder="Time between messages"
         />
       </v-col>
       <v-col cols="2">
         <v-checkbox
-          v-model="fromBeginning"
-          label="From Beginning"
+          v-model="loop"
+          label="Loop"
           dense
         ></v-checkbox>
       </v-col>
       <v-col cols="2" class="d-flex align-end flex-column">
         <v-row dense>
-          <v-btn color="error" small :disabled="this.messages.length === 0" @click="clearMessages">
+          <!--v-btn color="error" small :disabled="this.messages.length === 0" @click="clearMessages">
             <v-icon>mdi-trash-can</v-icon>
-          </v-btn>
-          <v-btn color="primary" small :disabled="!topicSelected" @click="loadMessages" >
+          </v-btn-->
+          <v-btn color="primary" small :disabled="!topicSelected" @click="startSender" >
             <v-icon>mdi-play</v-icon>
           </v-btn>
-          <v-btn color="primary" small :disabled="!topicSelected" @click="stopConsumer">
+          <v-btn color="primary" small :disabled="!topicSelected" @click="stopSender">
             <v-icon>mdi-stop</v-icon>
           </v-btn>
         </v-row>
@@ -56,26 +47,12 @@
         <v-alert v-if="statusMessage" :type="statusType" dismissible>
           {{ statusMessage }}
         </v-alert>
-        <!-- fade-alert :message="statusMessage" :type="statusType" dismissible :duration="2" / -->
-        <v-data-table
-          dense
-          :headers="headers"
-          :items="messages"
-          item-key="key"
-          :expanded.sync="expanded"
-          show-expand
-        >
-          <template v-slot:expanded-item="{ headers, item }">
-            <td :colspan="headers.length">
-              <json-viewer
-                :value="item"
-                :expand-depth=5
-                copyable
-                boxed
-                sort></json-viewer>
-            </td>
-          </template>
-        </v-data-table>
+        <vue-json-editor
+          v-model="json"
+          mode="code"
+          :modes="['code']"
+          :expandedOnStart="true"
+        ></vue-json-editor>
       </v-col>
     </v-row>
   </v-container>
@@ -84,52 +61,37 @@
 <script type="ts">
 import kafka from '../services/kafka'
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import { StatusCode } from '@/model/Status'
+import VueJsonEditor from 'vue-json-editor/vue-json-editor'
 
-@Component
+@Component({
+  components: {
+    VueJsonEditor
+  }
+})
 export default class Brokers extends Vue {
+  json = [{ msg: 'demo 1' }, { msg: 'demo 2' }]
   topics = []
   topic = null
-  filter = null
-  expanded = []
-  messages = []
-  columnsString = 'topic,partition,key'
+  time = 1000
+  loop = true
   loading = true
-  headers = []
-  fromBeginning = false
   statusMessage = null
   statusType = 'success'
-
-  match (rawMessage, filter) {
-    if (!filter) return true
-    const words = filter.split(/\s/)
-    return words.every(w => rawMessage.includes(w))
-  }
-
-  loadMessages () {
-    this.messages = []
+  startSender () {
     const brokers = this.connection.boostrapServers
-    kafka.getMessages(brokers,
-      'caeycae' + Date.now().toString(), // TODO random, parece que no se borran
+    const messages = this.json.map(j => JSON.stringify(j))
+    console.log(messages)
+    kafka.startSender(
+      brokers,
+      messages,
       this.topic,
-      (topic, partition, message) => {
-        const rawMessage = message.value.toString()
-        if (this.match(rawMessage, this.filter)) {
-          const m = JSON.parse(rawMessage)
-          m.topic = topic
-          m.key = message.key.toString()
-          m.partition = partition
-          this.messages.push(m)
-        }
-      },
-      this.fromBeginning)
-      .then(e => console.log('iiiiiii', e))
-      .catch(e => console.log('>>>>>>>', e))
+      this.time,
+      this.loop
+    )
   }
 
   created () {
     this.loadTopics()
-    this.onColumnsChange()
   }
 
   loadTopics () {
@@ -152,29 +114,13 @@ export default class Brokers extends Vue {
     return this.topic != null
   }
 
-  clearMessages () {
-    this.messages = []
-  }
-
-  stopConsumer () {
-    kafka.stopConsumer()
-      .then(s => {
-        this.statusMessage = s.message
-        this.statusType = s.code = StatusCode.ERROR ? 'error' : 'success'
-      })
+  stopSender () {
+    kafka.stopSender()
   }
 
   @Watch('connection')
   onPropertyChanged () {
     this.loadTopics()
-  }
-
-  @Watch('columnsString')
-  onColumnsChange () {
-    this.headers = this.columnsString
-      .split(',')
-      .map(h => h.trim())
-      .map(h => ({ text: h, value: h }))
   }
 }
 

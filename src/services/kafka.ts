@@ -1,4 +1,4 @@
-import { CompressionCodecs, CompressionTypes, Consumer, Kafka } from 'kafkajs'
+import { CompressionCodecs, CompressionTypes, Consumer, Producer, Kafka } from 'kafkajs'
 // @ts-ignore
 import SnappyCodec from 'kafkajs-snappy'
 import Status, { StatusCode } from '@/model/Status'
@@ -6,6 +6,8 @@ import Status, { StatusCode } from '@/model/Status'
 CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
 const clientId = 'kafkavue' // TODO ver si es fijo
 let consumer: Consumer
+let producer: Producer
+let timer: NodeJS.Timeout
 
 const getTopics = (brokers: string[]) => {
   const kafka = new Kafka({
@@ -16,7 +18,7 @@ const getTopics = (brokers: string[]) => {
     .then(ts => kafka.admin().fetchTopicMetadata({ topics: ts }))
 }
 
-const getMessages = async (brokers: string[], groupId: string, topic: string, cb: Function) => {
+const getMessages = async (brokers: string[], groupId: string, topic: string, cb: Function, fromBeginning: boolean) => {
   const kafka = new Kafka({
     clientId,
     brokers
@@ -25,7 +27,7 @@ const getMessages = async (brokers: string[], groupId: string, topic: string, cb
     groupId
   })
   await consumer.connect()
-  await consumer.subscribe({ topic }) // fromBeginning: true
+  await consumer.subscribe({ topic, fromBeginning })
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
       cb(topic, partition, message)
@@ -34,6 +36,31 @@ const getMessages = async (brokers: string[], groupId: string, topic: string, cb
   setTimeout(() => {
     consumer.stop()
   }, 10000)
+}
+
+const startSender = async (brokers: string[], messages: string[], topic: string, time: number, loop: boolean) => {
+  const kafka = new Kafka({
+    clientId,
+    brokers
+  })
+  producer = kafka.producer({
+    allowAutoTopicCreation: false
+  })
+  let i = 0
+  await producer.connect()
+  timer = setInterval(() => {
+    const message = { key: 'key' + i++, value: messages[i % messages.length] }
+    producer.send({
+      topic,
+      messages: [message]
+    }).then(r => console.log('R', r))
+    i++
+  }, time)
+}
+
+const stopSender = () => {
+  if (timer) timer.unref()
+  if (producer) producer.disconnect().then(r => console.log('Producer disconnected'))
 }
 
 const stopConsumer = (): Promise<Status> => {
@@ -86,5 +113,7 @@ export default {
   test,
   getBrokers,
   getConsumers,
-  stopConsumer
+  stopConsumer,
+  startSender,
+  stopSender
 }
