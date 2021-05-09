@@ -75,7 +75,7 @@
           <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length">
               <json-viewer
-                :value="item"
+                :value="item.msg"
                 :expand-depth=5
                 copyable
                 boxed
@@ -100,37 +100,22 @@ export default class Brokers extends Vue {
   filter = null
   expanded = []
   messages = []
-  columnsString = 'topic,partition,key'
+  columnsString = ''
   loading = true
   headers = []
   fromBeginning = false
   statusMessage = null
   statusType = 'success'
 
-  match (rawMessage, filter) {
-    if (!filter) return true
-    const words = filter.split(/\s/)
-    return words.every(w => rawMessage.includes(w))
-  }
-
   loadMessages () {
     this.messages = []
     this.loading = true
     const brokers = this.connection.boostrapServers
     kafka.getMessages(brokers,
-      'caeycae' + Date.now().toString(), // TODO random, parece que no se borran
       this.topic,
-      (topic, partition, message) => {
-        const rawMessage = message.value.toString()
-        if (this.match(rawMessage, this.filter)) {
-          const m = JSON.parse(rawMessage)
-          m.topic = topic
-          m.key = message.key ? message.key.toString() : 'no key'
-          m.partition = partition
-          this.messages.push(m)
-        }
-      },
-      this.fromBeginning)
+      this.filter,
+      this.fromBeginning,
+      (message) => this.messages.push(message))
       .then(e => console.log('iiiiiii', e))
       .catch(e => console.log('>>>>>>>', e))
   }
@@ -178,12 +163,24 @@ export default class Brokers extends Vue {
     this.loadTopics()
   }
 
+  cName (h) {
+    if (h === 'meta.key') return 'Key'
+    if (h === 'meta.partition') return 'Partition'
+    else return h.charAt(0).toUpperCase() + h.slice(1)
+  }
+
+  cValue (h) {
+    if (h === 'meta.key') return 'meta.key'
+    if (h === 'meta.partition') return 'meta.partition'
+    else return 'msg.' + h
+  }
+
   @Watch('columnsString')
   onColumnsChange () {
-    this.headers = this.columnsString
+    this.headers = (this.columnsString ? this.columnsString : 'meta.key,meta.partition')
       .split(',')
       .map(h => h.trim())
-      .map(h => ({ text: h, value: h }))
+      .map(h => ({ text: this.cName(h), value: this.cValue(h), sortable: true }))
   }
 }
 

@@ -18,7 +18,14 @@ const getTopics = (brokers: string[]) => {
     .then(ts => kafka.admin().fetchTopicMetadata({ topics: ts }))
 }
 
-const getMessages = async (brokers: string[], groupId: string, topic: string, cb: Function, fromBeginning: boolean) => {
+const match = (rawMessage: string, filter: string) => {
+  if (!filter) return true
+  const words = filter.split(/\s/)
+  return words.every(w => rawMessage.includes(w))
+}
+
+const getMessages = async (brokers: string[], topic: string, filter: string, fromBeginning: boolean, cb: Function) => {
+  const groupId = 'caeycae' + Date.now() // TODO
   const kafka = new Kafka({
     clientId,
     brokers
@@ -30,7 +37,18 @@ const getMessages = async (brokers: string[], groupId: string, topic: string, cb
   await consumer.subscribe({ topic, fromBeginning })
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
-      cb(topic, partition, message)
+      const rawMessage = message && message.value ? message.value.toString() : '{}'
+      if (match(rawMessage, filter)) {
+        const msg = {
+          meta: {
+            topic,
+            partition,
+            key: message.key ? message.key.toString() : 'no key'
+          },
+          msg: JSON.parse(rawMessage)
+        }
+        cb(msg)
+      }
     }
   })
   setTimeout(() => {
