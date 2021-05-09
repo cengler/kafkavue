@@ -1,58 +1,59 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col cols="2">
-        <v-autocomplete
-          label="Topic"
-          placeholder="Select a topic"
-          :items="topics"
-          v-model="topic"
-          dense
-          hide-details
-          item-text="name"
-          />
-      </v-col>
-      <v-col cols="2">
-        <v-text-field
-          label="Time"
-          dense
-          v-model="time"
-          hide-details
-          placeholder="Time between messages"
-        />
-      </v-col>
-      <v-col cols="2">
-        <v-checkbox
-          v-model="loop"
-          label="Loop"
-          dense
-        ></v-checkbox>
-      </v-col>
-      <v-col cols="2" class="d-flex align-end flex-column">
-        <v-row dense>
-          <!--v-btn color="error" small :disabled="this.messages.length === 0" @click="clearMessages">
-            <v-icon>mdi-trash-can</v-icon>
-          </v-btn-->
-          <v-btn color="primary" small :disabled="!topicSelected" @click="startSender" >
-            <v-icon>mdi-play</v-icon>
-          </v-btn>
-          <v-btn color="primary" small :disabled="!topicSelected" @click="stopSender">
-            <v-icon>mdi-stop</v-icon>
-          </v-btn>
-        </v-row>
-      </v-col>
-    </v-row>
-    <v-row>
       <v-col cols="12">
-        <v-alert v-if="statusMessage" :type="statusType" dismissible>
-          {{ statusMessage }}
-        </v-alert>
-        <vue-json-editor
-          v-model="json"
-          mode="code"
-          :modes="['code']"
-          :expandedOnStart="true"
-        ></vue-json-editor>
+        <v-card>
+          <v-toolbar flat>
+            <v-autocomplete
+              label="Topic"
+              placeholder="Select a topic"
+              :items="topics"
+              v-model="topic"
+              dense
+              hide-details
+              item-text="name"
+              class="mr-3"
+            />
+            <v-text-field
+              label="Time between messages"
+              dense
+              v-model="time"
+              hide-details
+              placeholder="Time between messages"
+              class="mr-3"
+            />
+            <v-checkbox
+              v-model="loop"
+              label="Loop"
+              dense
+              hide-details
+              class="mr-3"
+            ></v-checkbox>
+            <v-btn color="primary"
+                   small
+                   :disabled="!topicSelected"
+                   @click="startSender"
+                   class="mr-1">
+              <v-icon>mdi-play</v-icon>
+            </v-btn>
+            <v-btn color="primary"
+                   small
+                   :disabled="!topicSelected"
+                   @click="stopSender"
+                   class="mr-1">
+              <v-icon>mdi-stop</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-alert v-if="statusMessage" :type="statusType" dismissible>
+            {{ statusMessage }}
+          </v-alert>
+          <vue-json-editor
+            v-model="json"
+            mode="code"
+            :modes="['code']"
+            :expandedOnStart="true"
+          ></vue-json-editor>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -73,14 +74,13 @@ export default class Brokers extends Vue {
   topics = []
   topic = null
   time = 1000
-  loop = true
+  loop = false
   loading = true
   statusMessage = null
   statusType = 'success'
   startSender () {
     const brokers = this.connection.boostrapServers
     const messages = this.json.map(j => JSON.stringify(j))
-    console.log(messages)
     kafka.startSender(
       brokers,
       messages,

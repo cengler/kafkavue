@@ -49,17 +49,20 @@ const startSender = async (brokers: string[], messages: string[], topic: string,
   let i = 0
   await producer.connect()
   timer = setInterval(() => {
-    const message = { key: 'key' + i++, value: messages[i % messages.length] }
+    const message = { key: 'key' + i, value: messages[i % messages.length] }
     producer.send({
       topic,
       messages: [message]
-    }).then(r => console.log('R', r))
+    }).then(r => console.log('Sent: ', r.length ? r[0].baseOffset : 'unk'))
     i++
+    if (!loop && i === messages.length) {
+      clearInterval(timer)
+    }
   }, time)
 }
 
 const stopSender = () => {
-  if (timer) timer.unref()
+  if (timer) clearInterval(timer)
   if (producer) producer.disconnect().then(r => console.log('Producer disconnected'))
 }
 

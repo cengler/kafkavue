@@ -1,57 +1,6 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col cols="2">
-        <v-autocomplete
-          label="Topic"
-          placeholder="Select a topic"
-          :items="topics"
-          v-model="topic"
-          dense
-          hide-details
-          item-text="name"
-          />
-      </v-col>
-      <v-col cols="2">
-        <v-text-field
-          label="Filter"
-          dense
-          v-model="filter"
-          hide-details
-          placeholder="Add filter text"
-        />
-      </v-col>
-      <v-col cols="2">
-        <v-text-field
-          label="Columns"
-          dense
-          hide-details
-          v-model="columnsString"
-          placeholder=""
-        />
-      </v-col>
-      <v-col cols="2">
-        <v-checkbox
-          v-model="fromBeginning"
-          label="From Beginning"
-          dense
-        ></v-checkbox>
-      </v-col>
-      <v-col cols="2" class="d-flex align-end flex-column">
-        <v-row dense>
-          <v-btn color="error" small :disabled="this.messages.length === 0" @click="clearMessages">
-            <v-icon>mdi-trash-can</v-icon>
-          </v-btn>
-          <v-btn color="primary" small :disabled="!topicSelected" @click="loadMessages" >
-            <v-icon>mdi-play</v-icon>
-          </v-btn>
-          <v-btn color="primary" small :disabled="!topicSelected" @click="stopConsumer">
-            <v-icon>mdi-stop</v-icon>
-          </v-btn>
-        </v-row>
-      </v-col>
-    </v-row>
-    <v-row>
       <v-col cols="12">
         <v-alert v-if="statusMessage" :type="statusType" dismissible>
           {{ statusMessage }}
@@ -64,7 +13,65 @@
           item-key="key"
           :expanded.sync="expanded"
           show-expand
+          :loading="loading"
         >
+          <template v-slot:top>
+            <v-toolbar flat>
+              <v-autocomplete
+                label="Topic"
+                placeholder="Select a topic"
+                :items="topics"
+                v-model="topic"
+                dense
+                hide-details
+                item-text="name"
+                class="mr-3"
+              />
+              <v-text-field
+                label="Filter"
+                dense
+                v-model="filter"
+                hide-details
+                placeholder="Add filter text"
+                class="mr-3"
+              />
+              <v-text-field
+                label="Columns"
+                dense
+                hide-details
+                v-model="columnsString"
+                placeholder=""
+                class="mr-3"
+              />
+              <v-checkbox
+                v-model="fromBeginning"
+                label="From Beginning"
+                dense
+                hide-details
+                class="mr-3"
+              />
+              <v-btn color="error"
+                     small
+                     :disabled="messages && messages.length === 0"
+                     @click="clearMessages"
+                     class="mr-1">
+                <v-icon>mdi-trash-can</v-icon>
+              </v-btn>
+              <v-btn color="primary"
+                     small
+                     :disabled="!topicSelected"
+                     @click="loadMessages"
+                     class="mr-1">
+                <v-icon>mdi-play</v-icon>
+              </v-btn>
+              <v-btn color="primary"
+                     small
+                     :disabled="!topicSelected"
+                     @click="stopConsumer">
+                <v-icon>mdi-stop</v-icon>
+              </v-btn>
+            </v-toolbar>
+          </template>
           <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length">
               <json-viewer
@@ -108,6 +115,7 @@ export default class Brokers extends Vue {
 
   loadMessages () {
     this.messages = []
+    this.loading = true
     const brokers = this.connection.boostrapServers
     kafka.getMessages(brokers,
       'caeycae' + Date.now().toString(), // TODO random, parece que no se borran
@@ -117,7 +125,7 @@ export default class Brokers extends Vue {
         if (this.match(rawMessage, this.filter)) {
           const m = JSON.parse(rawMessage)
           m.topic = topic
-          m.key = message.key.toString()
+          m.key = message.key ? message.key.toString() : 'no key'
           m.partition = partition
           this.messages.push(m)
         }
@@ -159,6 +167,7 @@ export default class Brokers extends Vue {
   stopConsumer () {
     kafka.stopConsumer()
       .then(s => {
+        this.loading = false
         this.statusMessage = s.message
         this.statusType = s.code = StatusCode.ERROR ? 'error' : 'success'
       })

@@ -106,7 +106,6 @@ export default class App extends Vue {
 
   created () {
     this.$vuetify.theme.dark = true
-    console.log(this.connections.length)
     if (!this.connections.length) {
       this.$router.push({ path: '/edit' })
     }
