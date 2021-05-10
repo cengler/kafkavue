@@ -4,10 +4,18 @@
       v-model="drawer"
       app
     >
-      <v-list dense>
-        <v-list-item tag="div">
-          <v-list-item-content><v-list-item-title>Kafka Vue</v-list-item-title></v-list-item-content>
+      <template v-slot:prepend>
+        <v-list-item two-line>
+          <v-list-item-avatar>
+            <img src="icon.png">
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>Kafka Vue</v-list-item-title>
+            <v-list-item-subtitle>Kafka tool</v-list-item-subtitle>
+          </v-list-item-content>
         </v-list-item>
+      </template>
+      <v-list dense>
         <v-divider/>
         <template v-for="menu in menuItems">
           <v-list-item link :to="menu.link" :key="menu.link" :disabled="menu.link !== '/' && connection === null">
@@ -54,8 +62,8 @@
       <router-view />
     </v-main>
 
-    <v-footer app inset class="hidden-md-and-down">
-      <v-layout justify-center row wrap>
+    <v-footer app inset>
+      <v-layout justify-center>
         <span>Please, report errors to:
           <a href="https://github.com/cengler/kafkavue/issues">Github issues</a>
         </span>
