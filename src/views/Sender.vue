@@ -1,8 +1,8 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <v-col cols="12">
-        <v-card>
+  <v-container fluid style="height: 100%">
+    <v-row fluid style="height: 100%">
+      <v-col cols="12" fluid style="height: 100%">
+        <v-card fluid style="height: 100%">
           <v-toolbar flat>
             <v-autocomplete
               label="Topic"
@@ -43,16 +43,20 @@
                    class="mr-1">
               <v-icon>mdi-stop</v-icon>
             </v-btn>
+            <v-alert v-if="statusMessage" :type="statusType" dismissible>
+              {{ statusMessage }}
+            </v-alert>
           </v-toolbar>
-          <v-alert v-if="statusMessage" :type="statusType" dismissible>
-            {{ statusMessage }}
-          </v-alert>
-          <vue-json-editor
-            v-model="json"
-            mode="code"
-            :modes="['code']"
-            :expandedOnStart="true"
-          ></vue-json-editor>
+          <v-card-text fluid style="height: 100%">
+            <v-progress-linear indeterminate v-if="loading" />
+            <vue-json-editor
+              style="height:100%"
+              v-model="json"
+              mode="code"
+              :modes="['code']"
+              :expandedOnStart="true"
+            ></vue-json-editor>
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
@@ -79,6 +83,7 @@ export default class Brokers extends Vue {
   statusMessage = null
   statusType = 'success'
   startSender () {
+    this.loading = true
     const brokers = this.connection.boostrapServers
     const messages = this.json.map(j => JSON.stringify(j))
     kafka.startSender(
@@ -116,11 +121,22 @@ export default class Brokers extends Vue {
 
   stopSender () {
     kafka.stopSender()
+    this.loading = false
   }
 
   @Watch('connection')
   onPropertyChanged () {
     this.loadTopics()
+  }
+
+  beforeRouteLeave (to, from, next) {
+    const answer = !this.loading || window.confirm('Do you really want to leave? you are sending messages!')
+    if (answer) {
+      this.stopSender()
+      next()
+    } else {
+      next(false)
+    }
   }
 }
 
@@ -128,91 +144,8 @@ export default class Brokers extends Vue {
 
 <style type="scss">
 
-.text-start {
-  text-overflow: ellipsis;
+.jsoneditor-vue {
+  height: 95%;
 }
 
-.dark-json-theme {
-  background: #131313;
-  white-space: nowrap;
-  color: #525252;
-  font-size: 14px;
-  font-family: Consolas, Menlo, Courier, monospace;
-
-  .jv-ellipsis {
-    color: #999;
-    background-color: #eee;
-    display: inline-block;
-    line-height: 0.9;
-    font-size: 0.9em;
-    padding: 0px 4px 2px 4px;
-    border-radius: 3px;
-    vertical-align: 2px;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .jv-button {
-    color: #49b3ff
-  }
-
-  .jv-key {
-    color: #111111
-  }
-
-  .jv-item {
-    &.jv-array {
-      color: #111111
-    }
-
-    &.jv-boolean {
-      color: #fc1e70
-    }
-
-    &.jv-function {
-      color: #067bca
-    }
-
-    &.jv-number {
-      color: #fc1e70
-    }
-
-    &.jv-number-float {
-      color: #fc1e70
-    }
-
-    &.jv-number-integer {
-      color: #fc1e70
-    }
-
-    &.jv-object {
-      color: #111111
-    }
-
-    &.jv-undefined {
-      color: #e08331
-    }
-
-    &.jv-string {
-      color: #42b983;
-      word-break: break-word;
-      white-space: normal;
-    }
-  }
-
-  .jv-code {
-    .jv-toggle {
-      &:before {
-        padding: 0px 2px;
-        border-radius: 2px;
-      }
-
-      &:hover {
-        &:before {
-          background: #eee;
-        }
-      }
-    }
-  }
-}
 </style>

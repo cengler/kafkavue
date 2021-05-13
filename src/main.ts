@@ -9,9 +9,17 @@ import '@mdi/font/css/materialdesignicons.css'
 // @ts-ignore
 import JsonViewer from 'vue-json-viewer'
 import 'vue-json-viewer/style.css'
+import Component from 'vue-class-component'
 
 Vue.config.productionTip = false
 Vue.use(JsonViewer)
+
+// Register the router hooks with their names
+Component.registerHooks([
+  'beforeRouteEnter',
+  'beforeRouteLeave',
+  'beforeRouteUpdate'
+])
 
 new Vue({
   router,

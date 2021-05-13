@@ -58,7 +58,7 @@
       </v-select>
     </v-app-bar>
 
-    <v-main>
+    <v-main fluid>
       <router-view />
     </v-main>
 
