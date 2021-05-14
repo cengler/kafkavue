@@ -18,6 +18,14 @@ const getTopics = (brokers: string[]) => {
     .then(ts => kafka.admin().fetchTopicMetadata({ topics: ts }))
 }
 
+const createTopic = (brokers: string[], topic: string, replicationFactor: number, numPartitions: number) => {
+  const kafka = new Kafka({
+    clientId,
+    brokers
+  })
+  return kafka.admin().createTopics({ topics: [{ topic, numPartitions, replicationFactor }] })
+}
+
 const match = (rawMessage: string, filter: string) => {
   if (!filter) return true
   const words = filter.split(/\s/)
@@ -136,5 +144,6 @@ export default {
   getConsumers,
   stopConsumer,
   startSender,
-  stopSender
+  stopSender,
+  createTopic
 }

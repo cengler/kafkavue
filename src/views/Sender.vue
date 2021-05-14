@@ -67,6 +67,7 @@
 import kafka from '../services/kafka'
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import VueJsonEditor from 'vue-json-editor/vue-json-editor'
+import data from '../example/data.json'
 
 @Component({
   components: {
@@ -74,7 +75,7 @@ import VueJsonEditor from 'vue-json-editor/vue-json-editor'
   }
 })
 export default class Brokers extends Vue {
-  json = [{ msg: 'demo 1' }, { msg: 'demo 2' }]
+  json = data
   topics = []
   topic = null
   time = 1000

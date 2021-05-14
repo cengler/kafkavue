@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, Event } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -43,8 +43,8 @@ function createWindow () {
     win = null
   })
 
-  var handleRedirect = (e, url) => {
-    if(url != win.webContents.getURL()) {
+  let handleRedirect = (e: Event, url: string) => {
+    if(win && url != win.webContents.getURL()) {
       e.preventDefault()
       require('electron').shell.openExternal(url)
     }

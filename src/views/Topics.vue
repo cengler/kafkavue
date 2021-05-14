@@ -18,6 +18,7 @@
                 hide-details
               ></v-text-field>
               <v-spacer></v-spacer>
+              <add-topic/>
               <v-btn icon @click="load">
                 <v-icon class="fas fa-sync"></v-icon>
               </v-btn>
@@ -35,7 +36,13 @@
 <script>
 import kafka from '../services/kafka'
 import { Vue, Component, Watch } from 'vue-property-decorator'
-@Component
+import AddTopic from '../components/AddTopic'
+
+@Component({
+  components: {
+    AddTopic
+  }
+})
 export default class Brokers extends Vue {
   topics = []
   search = ''

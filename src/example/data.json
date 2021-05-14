@@ -1,0 +1,20 @@
+[
+  {"firstname": "John", "lastname" : "Smith", "city" : "Boston", "state" : "MA", "children": [
+    {"name" : "Callie", "Age" : 5},
+    {"name" : "Griffin", "Age" :3},
+    {"name" : "Luke", "Age" : 1}
+  ]
+  },
+  {"firstname": "Henry", "lastname" : "Rhodes", "city" : "New York", "state" : "NY", "children": [
+    {"name" : "Howard", "Age" : 15},
+    {"name" : "Robert", "Age" : 11}
+  ]
+  },
+  {"firstname": "Allison", "lastname" : "Berman", "city" : "Los Angeles", "state" : "CA", "children": [
+    {"name" : "Jeff", "Age" : 35},
+    {"name" : "Roxanne", "Age" :33},
+    {"name" : "Claudia", "Age" : 31},
+    {"name" : "Denzel", "Age" : 11}
+  ]
+  }
+]
