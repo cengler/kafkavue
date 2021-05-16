@@ -27,7 +27,7 @@
                 hide-details
               ></v-text-field>
               <v-spacer></v-spacer>
-              <add-topic :topics="topicsNames" @new-topic="load"/>
+              <add-topic :topics="topicsNames" @new-topic="newTopic"/>
               <v-btn icon @click="load">
                 <v-icon class="fas fa-sync"></v-icon>
               </v-btn>
@@ -45,6 +45,14 @@
             </v-icon>
           </template>
         </v-data-table>
+        <v-snackbar v-model="snackbar" :timeout="5000" bottom>
+          {{ snackbarText }}
+          <template v-slot:action="{ attrs }">
+            <v-btn color="blue" text v-bind="attrs" @click="snackbar = false">
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
       </v-col>
     </v-row>
   </v-container>
@@ -66,6 +74,8 @@ export default class Brokers extends Vue {
   topics = []
   search = ''
   loading = true
+  snackbar = false
+  snackbarText = null
   expanded = []
   headers = [
     {
@@ -94,11 +104,17 @@ export default class Brokers extends Vue {
     this.topics = []
     this.loading = true
     const brokers = this.connection.boostrapServers
-    kafka.getTopics(brokers)
+    kafka.getTopicsMetadata(brokers)
       .then(topics => {
         this.topics = topics.topics
         this.loading = false
       })
+  }
+
+  newTopic () {
+    this.snackbarText = 'Topic created'
+    this.snackbar = true
+    this.load()
   }
 
   get connection () {

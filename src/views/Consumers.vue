@@ -8,7 +8,16 @@
           :items="consumers"
           :loading="loading"
           :search="search"
+          item-key="groupId"
+          single-expand
+          :expanded="expanded"
+          show-expand
         >
+          <template v-slot:expanded-item="{ headers, item }">
+            <td :colspan="headers.length">
+              <consumer-extra :consumer="item" />
+            </td>
+          </template>
           <template v-slot:top>
             <v-toolbar flat>
               <v-text-field
@@ -22,6 +31,9 @@
               </v-btn>
             </v-toolbar>
           </template>
+          <template v-slot:item.members="{ item }">
+            {{ item.members.length }}
+          </template>
         </v-data-table>
       </v-col>
     </v-row>
@@ -31,7 +43,13 @@
 <script>
 import kafka from '../services/kafka'
 import { Vue, Component, Watch } from 'vue-property-decorator'
-@Component
+import ConsumerExtra from '@/components/ConsumerExtra'
+
+@Component({
+  components: {
+    ConsumerExtra
+  }
+})
 export default class Brokers extends Vue {
   consumers = []
   loading = true
@@ -42,8 +60,20 @@ export default class Brokers extends Vue {
       value: 'groupId'
     },
     {
+      text: 'Members',
+      value: 'members'
+    },
+    {
+      text: 'Protocol',
+      value: 'protocol'
+    },
+    {
       text: 'Protocol Type',
       value: 'protocolType'
+    },
+    {
+      text: 'State',
+      value: 'state'
     }
   ]
 
@@ -55,7 +85,7 @@ export default class Brokers extends Vue {
     this.consumers = []
     this.loading = true
     const brokers = this.connection.boostrapServers
-    kafka.getConsumers(brokers)
+    kafka.getConsumersMetadata(brokers)
       .then(consumers => {
         this.consumers = consumers
         this.loading = false

@@ -5,9 +5,19 @@ import Status, { StatusCode } from '@/model/Status'
 
 CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
 const clientId = 'kafkavue' // TODO ver si es fijo
+const groupId = 'kafkavue'
 let consumer: Consumer
 let producer: Producer
 let timer: NodeJS.Timeout
+
+const getTopicsMetadata = (brokers: string[]) => {
+  const kafka = new Kafka({
+    clientId,
+    brokers
+  })
+  return kafka.admin().listTopics()
+    .then(ts => kafka.admin().fetchTopicMetadata({ topics: ts }))
+}
 
 const getTopics = (brokers: string[]) => {
   const kafka = new Kafka({
@@ -15,7 +25,6 @@ const getTopics = (brokers: string[]) => {
     brokers
   })
   return kafka.admin().listTopics()
-    .then(ts => kafka.admin().fetchTopicMetadata({ topics: ts }))
 }
 
 const createTopic = (brokers: string[], topic: string, replicationFactor: number, numPartitions: number) => {
@@ -33,7 +42,6 @@ const match = (rawMessage: string, filter: string) => {
 }
 
 const getMessages = async (brokers: string[], topic: string, filter: string, fromBeginning: boolean, cb: Function) => {
-  const groupId = 'caeycae' + Date.now() // TODO
   const kafka = new Kafka({
     clientId,
     brokers
@@ -44,6 +52,7 @@ const getMessages = async (brokers: string[], topic: string, filter: string, fro
   await consumer.connect()
   await consumer.subscribe({ topic, fromBeginning })
   await consumer.run({
+    autoCommit: false,
     eachMessage: async ({ topic, partition, message }) => {
       const rawMessage = message && message.value ? message.value.toString() : '{}'
       if (match(rawMessage, filter)) {
@@ -89,7 +98,7 @@ const startSender = async (brokers: string[], messages: string[], topic: string,
 
 const stopSender = () => {
   if (timer) clearInterval(timer)
-  if (producer) producer.disconnect().then(r => console.log('Producer disconnected'))
+  if (producer) producer.disconnect().then(() => console.log('Producer disconnected'))
 }
 
 const stopConsumer = (): Promise<Status> => {
@@ -130,14 +139,22 @@ const getConsumers = (brokers: string[]) => {
     clientId,
     brokers
   })
+  return kafka.admin().listGroups().then(result => result.groups)
+}
+
+const getConsumersMetadata = (brokers: string[]) => {
+  const kafka = new Kafka({
+    clientId,
+    brokers
+  })
   return kafka.admin().listGroups()
-    .then(result => {
-      return result.groups
-    })
+    .then(result => kafka.admin().describeGroups(result.groups.map(g => g.groupId))
+      .then(a => a.groups))
 }
 
 export default {
   getTopics,
+  getTopicsMetadata,
   getMessages,
   test,
   getBrokers,
@@ -145,5 +162,6 @@ export default {
   stopConsumer,
   startSender,
   stopSender,
-  createTopic
+  createTopic,
+  getConsumersMetadata
 }
