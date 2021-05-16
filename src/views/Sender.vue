@@ -98,6 +98,9 @@ export default class Brokers extends Vue {
 
   created () {
     this.loadTopics()
+    if (this.$route.params.topic) {
+      this.topic = this.$route.params.topic
+    }
   }
 
   loadTopics () {

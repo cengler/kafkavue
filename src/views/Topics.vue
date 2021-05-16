@@ -27,6 +27,14 @@
           <template v-slot:item.partitions="{ item }">
               {{ item.partitions.length }}
           </template>
+          <template v-slot:item.actions="{ item }">
+            <v-icon small class="mr-2" @click="searchItem(item)">
+              mdi-magnify
+            </v-icon>
+            <v-icon small @click="sendItem(item)">
+              mdi-send
+            </v-icon>
+          </template>
         </v-data-table>
       </v-col>
     </v-row>
@@ -54,7 +62,15 @@ export default class Brokers extends Vue {
     },
     {
       text: 'Partitions',
-      value: 'partitions'
+      value: 'partitions',
+      width: 150
+    },
+    {
+      text: 'Actions',
+      value: 'actions',
+      align: 'end',
+      width: 100,
+      sortable: false
     }
   ]
 
@@ -79,6 +95,18 @@ export default class Brokers extends Vue {
 
   get topicsNames () {
     return this.topics.map(t => t.name)
+  }
+
+  searchItem (item) {
+    this.$router.push({
+      name: 'Search', params: { topic: item.name }
+    })
+  }
+
+  sendItem (item) {
+    this.$router.push({
+      name: 'Sender', params: { topic: item.name }
+    })
   }
 
   @Watch('connection')
