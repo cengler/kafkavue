@@ -18,7 +18,7 @@
                 hide-details
               ></v-text-field>
               <v-spacer></v-spacer>
-              <add-topic/>
+              <add-topic :topics="topicsNames" @new-topic="load"/>
               <v-btn icon @click="load">
                 <v-icon class="fas fa-sync"></v-icon>
               </v-btn>
@@ -75,6 +75,10 @@ export default class Brokers extends Vue {
 
   get connection () {
     return this.$store.getters.connection
+  }
+
+  get topicsNames () {
+    return this.topics.map(t => t.name)
   }
 
   @Watch('connection')
