@@ -1,13 +1,12 @@
 import { expect } from 'chai'
 import { shallowMount } from '@vue/test-utils'
-import HelloWorld from '@/components/HelloWorld.vue'
+import TopicExtra from '@/components/TopicExtra.vue'
 
-describe('HelloWorld.vue', () => {
-  it('renders props.msg when passed', () => {
-    const msg = 'new message'
-    const wrapper = shallowMount(HelloWorld, {
-      propsData: { msg }
+describe('TopicExtra.vue', () => {
+  it('renders', () => {
+    const wrapper = shallowMount(TopicExtra, {
+      propsData: { topic: { partitions: [{ partitionId: 'test' }] } }
     })
-    expect(wrapper.text()).to.include(msg)
+    expect(wrapper.text()).to.include('partitionId')
   })
 })

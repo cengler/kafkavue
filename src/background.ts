@@ -43,8 +43,8 @@ function createWindow () {
     win = null
   })
 
-  let handleRedirect = (e: Event, url: string) => {
-    if(win && url != win.webContents.getURL()) {
+  const handleRedirect = (e: Event, url: string) => {
+    if (win && url !== win.webContents.getURL()) {
       e.preventDefault()
       require('electron').shell.openExternal(url)
     }

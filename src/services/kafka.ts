@@ -47,7 +47,7 @@ const getMessages = async (brokers: string[], topic: string, filter: string, fro
     brokers
   })
   consumer = kafka.consumer({
-    groupId
+    groupId: groupId + new Date() // TODO
   })
   await consumer.connect()
   await consumer.subscribe({ topic, fromBeginning })
