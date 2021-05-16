@@ -10,7 +10,7 @@
           dense
           :headers="headers"
           :items="messages"
-          item-key="key"
+          item-key="innerKey"
           :expanded.sync="expanded"
           show-expand
           :loading="loading"
@@ -106,6 +106,8 @@ export default class Brokers extends Vue {
   fromBeginning = false
   statusMessage = null
   statusType = 'success'
+  // innerKey for single expand, real key cant be used if null keys exist
+  innerIdIndex = 0
 
   loadMessages () {
     this.messages = []
@@ -115,9 +117,10 @@ export default class Brokers extends Vue {
       this.topic,
       this.filter,
       this.fromBeginning,
-      (message) => this.messages.push(message))
-      .then(e => console.log('iiiiiii', e))
-      .catch(e => console.log('>>>>>>>', e))
+      (message) => {
+        this.messages.push({ innerKey: this.innerIdIndex++, ...message })
+      }
+    )
   }
 
   created () {

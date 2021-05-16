@@ -54,6 +54,7 @@ export default class Brokers extends Vue {
   consumers = []
   loading = true
   search = ''
+  expanded = []
   headers = [
     {
       text: 'Group ID',
