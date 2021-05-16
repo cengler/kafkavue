@@ -8,8 +8,17 @@
           :items="topics"
           :loading="loading"
           :search="search"
+          item-key="name"
+          single-expand
+          :expanded="expanded"
+          show-expand
           :items-per-page="100"
         >
+          <template v-slot:expanded-item="{ headers, item }">
+            <td :colspan="headers.length">
+              <topic-extra :topic="item" />
+            </td>
+          </template>
           <template v-slot:top>
             <v-toolbar flat>
               <v-text-field
@@ -45,16 +54,19 @@
 import kafka from '../services/kafka'
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import AddTopic from '../components/AddTopic'
+import TopicExtra from '../components/TopicExtra'
 
 @Component({
   components: {
-    AddTopic
+    AddTopic,
+    TopicExtra
   }
 })
 export default class Brokers extends Vue {
   topics = []
   search = ''
   loading = true
+  expanded = []
   headers = [
     {
       text: 'Name',
