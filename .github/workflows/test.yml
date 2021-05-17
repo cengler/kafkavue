@@ -30,5 +30,4 @@ jobs:
         run: |
           npm i
           npm run lint
-          npm run electron:build
           npm run test:unit
