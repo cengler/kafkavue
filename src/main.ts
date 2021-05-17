@@ -6,6 +6,7 @@ import vuetify from './plugins/vuetify'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@mdi/font/css/materialdesignicons.css'
+import 'three-dots/dist/three-dots.css'
 // @ts-ignore
 import JsonViewer from 'vue-json-viewer'
 import 'vue-json-viewer/style.css'

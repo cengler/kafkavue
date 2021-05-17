@@ -33,6 +33,9 @@
               </v-btn>
             </v-toolbar>
           </template>
+          <template v-slot:item.offsets="{ item }">
+            <offset :topic="item" />
+          </template>
           <template v-slot:item.partitions="{ item }">
               {{ item.partitions.length }}
           </template>
@@ -63,11 +66,13 @@ import kafka from '../services/kafka'
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import AddTopic from '../components/AddTopic'
 import TopicExtra from '../components/TopicExtra'
+import Offset from '../components/Offset'
 
 @Component({
   components: {
     AddTopic,
-    TopicExtra
+    TopicExtra,
+    Offset
   }
 })
 export default class Brokers extends Vue {
@@ -81,6 +86,10 @@ export default class Brokers extends Vue {
     {
       text: 'Name',
       value: 'name'
+    },
+    {
+      text: 'Offsets',
+      value: 'offsets'
     },
     {
       text: 'Partitions',

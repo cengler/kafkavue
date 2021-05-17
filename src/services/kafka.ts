@@ -19,6 +19,14 @@ const getTopicsMetadata = (brokers: string[]) => {
     .then(ts => kafka.admin().fetchTopicMetadata({ topics: ts }))
 }
 
+const fetchTopicOffsets = (brokers: string[], topic: string) => {
+  const kafka = new Kafka({
+    clientId,
+    brokers
+  })
+  return kafka.admin().fetchTopicOffsets(topic)
+}
+
 const getTopics = (brokers: string[]) => {
   const kafka = new Kafka({
     clientId,
@@ -70,7 +78,7 @@ const getMessages = async (brokers: string[], topic: string, filter: string, fro
   })
   setTimeout(() => {
     consumer.stop()
-  }, 10000)
+  }, 1000000)
 }
 
 const startSender = async (brokers: string[], messages: string[], topic: string, time: number, loop: boolean) => {
@@ -163,5 +171,6 @@ export default {
   startSender,
   stopSender,
   createTopic,
-  getConsumersMetadata
+  getConsumersMetadata,
+  fetchTopicOffsets
 }
