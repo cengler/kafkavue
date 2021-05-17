@@ -52,12 +52,12 @@ export default class TopicExtra extends Vue {
   ]
 
   decodeMA (memberAssignment) {
-    const assignment = AssignerProtocol.MemberAssignment.decode(memberAssignment)?.assignment
+    const assignment = AssignerProtocol.MemberAssignment.decode(memberAssignment).assignment
     return Object.keys(assignment)[0] + ':' + assignment[Object.keys(assignment)[0]]
   }
 
   decodeMM (memberMetadata) {
-    return AssignerProtocol.MemberMetadata.decode(memberMetadata)?.topics[0]
+    return AssignerProtocol.MemberMetadata.decode(memberMetadata).topics[0]
   }
 }
 
