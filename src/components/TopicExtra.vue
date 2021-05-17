@@ -1,16 +1,10 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <v-col cols="12">
-        <v-data-table
-          dense
-          :headers="headers"
-          :items="topic.partitions"
-        >
-        </v-data-table>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-data-table
+    dense
+    :headers="headers"
+    :items="topic.partitions"
+  >
+  </v-data-table>
 </template>
 
 <script type="ts">

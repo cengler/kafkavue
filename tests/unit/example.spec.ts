@@ -7,6 +7,6 @@ describe('TopicExtra.vue', () => {
     const wrapper = shallowMount(TopicExtra, {
       propsData: { topic: { partitions: [{ partitionId: 'test' }] } }
     })
-    expect(wrapper.text()).to.include('partitionId')
+    expect(wrapper.vm.headers).length(5)
   })
 })

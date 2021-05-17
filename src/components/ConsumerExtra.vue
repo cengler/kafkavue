@@ -1,22 +1,16 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <v-col cols="12">
-        <v-data-table
-          dense
-          :headers="headers"
-          :items="consumer.members"
-        >
-          <template v-slot:item.memberAssignment="{ item }">
-            {{ decodeMA(item.memberAssignment) }}
-          </template>
-          <template v-slot:item.memberMetadata="{ item }">
-            {{ decodeMM(item.memberMetadata) }}
-          </template>
-        </v-data-table>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-data-table
+    dense
+    :headers="headers"
+    :items="consumer.members"
+  >
+    <template v-slot:item.memberAssignment="{ item }">
+      {{ decodeMA(item.memberAssignment) }}
+    </template>
+    <template v-slot:item.memberMetadata="{ item }">
+      {{ decodeMM(item.memberMetadata) }}
+    </template>
+  </v-data-table>
 </template>
 
 <script type="ts">
