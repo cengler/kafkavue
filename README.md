@@ -4,6 +4,7 @@
 
 ## Project setup
 ```
+npm install --global yarn
 npm i
 ```
 
