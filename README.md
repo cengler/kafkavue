@@ -1,5 +1,7 @@
 # kafkavue
 
+![example workflow](https://github.com/cengler/kafkavue/actions/workflows/test.yml/badge.svg)
+
 ## Project setup
 ```
 npm i
