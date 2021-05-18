@@ -83,23 +83,31 @@ export default class Edit extends Vue {
     return !names.includes(v) ? true : 'name already exists'
   }
 
-  save () {
+  async save () {
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
-      this.$store.dispatch('saveConnection', new Connection(this.id, this.name, this.bootstrapServersString))
-      this.$router.push({ path: '/' })
+      const testResult = await this.testConnection()
+      if (testResult) {
+        await this.$store.dispatch('saveConnection', new Connection(this.id, this.name, this.bootstrapServersString))
+        await this.$router.push({ path: '/' })
+      }
+    } else {
+      this.status = 'error'
+      this.result = 'Missing fields'
     }
   }
 
   testConnection () {
     this.result = ''
-    kafka.test(this.bootstrapServersString)
+    return kafka.test(this.bootstrapServersString)
       .then(() => {
         this.status = 'success'
         this.result = 'Connection Success'
+        return true
       })
       .catch(e => {
         this.status = 'error'
-        this.result = e
+        this.result = `Connection error: ${e}`
+        return false
       })
   }
 }
