@@ -16,6 +16,7 @@
         >
           <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length">
+              <topic-config :topic="item" />
               <topic-extra :topic="item" />
             </td>
           </template>
@@ -66,12 +67,14 @@ import kafka from '../services/kafka'
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import AddTopic from '../components/AddTopic'
 import TopicExtra from '../components/TopicExtra'
+import TopicConfig from '../components/TopicConfig'
 import Offset from '../components/Offset'
 
 @Component({
   components: {
     AddTopic,
     TopicExtra,
+    TopicConfig,
     Offset
   }
 })

@@ -1,4 +1,4 @@
-import { CompressionCodecs, CompressionTypes, Consumer, Producer, Kafka } from 'kafkajs'
+import { CompressionCodecs, CompressionTypes, Consumer, Producer, Kafka, ConfigResourceTypes } from 'kafkajs'
 // @ts-ignore
 import SnappyCodec from 'kafkajs-snappy'
 import Status, { StatusCode } from '@/model/Status'
@@ -25,6 +25,23 @@ const fetchTopicOffsets = (brokers: string[], topic: string) => {
     brokers
   })
   return kafka.admin().fetchTopicOffsets(topic)
+}
+
+const describeTopicConfigs = (brokers: string[], topic: string) => {
+  const kafka = new Kafka({
+    clientId,
+    brokers
+  })
+  return kafka.admin().describeConfigs({
+    includeSynonyms: false,
+    resources: [
+      {
+        type: ConfigResourceTypes.TOPIC,
+        name: topic
+      }
+    ]
+  })
+    .then(dc => dc.resources[0].configEntries)
 }
 
 const getTopics = (brokers: string[]) => {
@@ -172,5 +189,6 @@ export default {
   stopSender,
   createTopic,
   getConsumersMetadata,
-  fetchTopicOffsets
+  fetchTopicOffsets,
+  describeTopicConfigs
 }
