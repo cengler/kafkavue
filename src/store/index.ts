@@ -26,23 +26,13 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    saveConnection (state, connection: Connection) {
-      if (connection.id) { // UPDATE
-        const c: Connection | undefined = state.connections.find(c => c.id === connection.id)
-        if (c) {
-          c.name = connection.name
-          c.boostrapServers = connection.boostrapServers
-        }
-      } else { // NEW
-        connection.id = state.connections.length === 0 ? 1 : Math.max(...state.connections.map(c => c.id)) + 1
-        state.connections.push(connection)
-      }
-      state.selectedConnection = connection
-      electronStore.setConnections(state.connections)
+    setConnections (state, connections: Array<Connection>) {
+      state.connections = connections
+      electronStore.setConnections(connections)
     },
     setSelectedConnection (state, connection: Connection) {
       state.selectedConnection = connection
-      electronStore.setConnection(state.selectedConnection)
+      electronStore.setConnection(connection)
     },
     deleteConnection (state, connection: Connection) {
       const c: Connection | undefined = state.connections.find(c => c.id === connection.id)
@@ -57,8 +47,19 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    saveConnection (context, connection: Connection) {
-      context.commit('saveConnection', connection)
+    saveConnection ({ state, commit }, connection: Connection) {
+      if (connection.id) { // UPDATE
+        const c: Connection | undefined = state.connections.find(c => c.id === connection.id)
+        if (c) {
+          c.name = connection.name
+          c.boostrapServers = connection.boostrapServers
+        }
+      } else { // NEW
+        connection.id = state.connections.length === 0 ? 1 : Math.max(...state.connections.map(c => c.id)) + 1
+        state.connections.push(connection)
+      }
+      commit('setSelectedConnection', connection)
+      commit('setConnections', state.connections)
     }
   },
   modules: {}
