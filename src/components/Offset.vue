@@ -1,7 +1,13 @@
 <template>
-  <div :class="offset === null ? 'dot-flashing' : ''">
-    {{ offset }}
-  </div>
+  <v-container class="ma-0 pa-0">
+    <div v-if="offset !== null">{{ offset }}</div>
+    <v-progress-circular
+      v-else
+      :size="15"
+      indeterminate
+      color="primary"
+    ></v-progress-circular>
+  </v-container>
 </template>
 
 <script type="ts">
@@ -29,3 +35,6 @@ export default class Offset extends Vue {
 }
 
 </script>
+
+<style type="scss">
+</style>

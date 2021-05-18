@@ -88,8 +88,9 @@ export default class Brokers extends Vue {
       value: 'name'
     },
     {
-      text: 'Offsets',
-      value: 'offsets'
+      text: 'Message Count',
+      value: 'offsets',
+      width: 150
     },
     {
       text: 'Partitions',
