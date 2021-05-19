@@ -85,6 +85,7 @@ export default class Brokers extends Vue {
   snackbar = false
   snackbarText = null
   expanded = []
+  kafka = kafka.forBrokers(this.connection.boostrapServers)
   headers = [
     {
       text: 'Name',
@@ -116,8 +117,7 @@ export default class Brokers extends Vue {
   load () {
     this.topics = []
     this.loading = true
-    const brokers = this.connection.boostrapServers
-    kafka.getTopicsMetadata(brokers)
+    this.kafka.getTopicsMetadata()
       .then(topics => {
         this.topics = topics.topics
         this.loading = false

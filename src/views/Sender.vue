@@ -83,11 +83,13 @@ export default class Brokers extends Vue {
   loading = true
   statusMessage = null
   statusType = 'success'
+  kafka = kafka.forBrokers(this.connection.boostrapServers)
+
   startSender () {
     this.loading = true
     const brokers = this.connection.boostrapServers
     const messages = this.json.map(j => JSON.stringify(j))
-    kafka.startSender(
+    this.kafka.startSender(
       brokers,
       messages,
       this.topic,
@@ -107,8 +109,7 @@ export default class Brokers extends Vue {
     this.topics = []
     this.topic = null
     this.loading = true
-    const brokers = this.connection.boostrapServers
-    kafka.getTopics(brokers)
+    this.kafka.getTopics()
       .then(topics => {
         this.topics = topics
         this.loading = false
@@ -124,7 +125,7 @@ export default class Brokers extends Vue {
   }
 
   stopSender () {
-    kafka.stopSender()
+    this.kafka.stopSender()
     this.loading = false
   }
 

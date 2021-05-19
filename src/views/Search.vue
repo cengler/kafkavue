@@ -43,6 +43,52 @@
                 placeholder=""
                 class="mr-3"
               />
+
+              <v-menu
+                ref="menu"
+                v-model="menu"
+                :close-on-content-click="false"
+                :return-value.sync="dates"
+                transition="scale-transition"
+                offset-y
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-combobox
+                    v-model="dates"
+                    multiple
+                    chips
+                    small-chips
+                    label="Dates"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                  ></v-combobox>
+                </template>
+                <v-date-picker
+                  v-model="dates"
+                  multiple
+                  no-title
+                  scrollable
+                >
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="menu = false"
+                  >
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.menu.save(dates)"
+                  >
+                    OK
+                  </v-btn>
+                </v-date-picker>
+              </v-menu>
               <v-checkbox
                 v-model="fromBeginning"
                 label="From Beginning"
@@ -108,12 +154,18 @@ export default class Brokers extends Vue {
   statusType = 'success'
   // innerKey for single expand, real key cant be used if null keys exist
   innerIdIndex = 0
+  dates = []
+  menu = false
+  kafka = kafka.forBrokers(this.connection.boostrapServers)
+
+  dateRangeText () {
+    return this.dates.join(' ~ ')
+  }
 
   loadMessages () {
     this.messages = []
     this.loading = true
-    const brokers = this.connection.boostrapServers
-    kafka.getMessages(brokers,
+    this.kafka.getMessages(
       this.topic,
       this.filter,
       this.fromBeginning,
@@ -135,8 +187,7 @@ export default class Brokers extends Vue {
     this.topics = []
     this.topic = null
     this.loading = true
-    const brokers = this.connection.boostrapServers
-    kafka.getTopics(brokers)
+    this.kafka.getTopics()
       .then(topics => {
         this.topics = topics
         this.loading = false
@@ -156,7 +207,7 @@ export default class Brokers extends Vue {
   }
 
   stopConsumer () {
-    kafka.stopConsumer()
+    this.kafka.stopConsumer()
       .then(s => {
         this.loading = false
         this.statusMessage = s.message
