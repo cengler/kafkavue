@@ -13,6 +13,7 @@
           item-key="innerKey"
           :expanded.sync="expanded"
           show-expand
+          single-expand
           :loading="loading"
         >
           <template v-slot:top>
@@ -74,12 +75,10 @@
           </template>
           <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length">
-              <json-viewer
+              <json-editor
                 :value="item.msg"
-                :expand-depth=5
-                copyable
-                boxed
-                sort></json-viewer>
+                :read-only="false">
+              </json-editor>
             </td>
           </template>
         </v-data-table>
@@ -92,8 +91,13 @@
 import kafka from '../services/kafka'
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { StatusCode } from '@/model/Status'
+import JsonEditor from '../components/JsonEditor.vue'
 
-@Component
+@Component({
+  components: {
+    JsonEditor
+  }
+})
 export default class Brokers extends Vue {
   topics = []
   topic = null

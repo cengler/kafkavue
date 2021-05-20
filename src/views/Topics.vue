@@ -16,8 +16,9 @@
         >
           <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length">
-              <topic-config :topic="item" />
-              <topic-extra :topic="item" />
+              <!--topic-config :topic="item" />
+              <topic-extra :topic="item" TODO /-->
+              <json-editor :value="item" :read-only="false" />
             </td>
           </template>
           <template v-slot:top>
@@ -68,6 +69,7 @@ import { Vue, Component, Watch } from 'vue-property-decorator'
 import AddTopic from '../components/AddTopic'
 import TopicExtra from '../components/TopicExtra'
 import TopicConfig from '../components/TopicConfig'
+import JsonEditor from '../components/JsonEditor'
 import Offset from '../components/Offset'
 
 @Component({
@@ -75,7 +77,8 @@ import Offset from '../components/Offset'
     AddTopic,
     TopicExtra,
     TopicConfig,
-    Offset
+    Offset,
+    JsonEditor
   }
 })
 export default class Brokers extends Vue {

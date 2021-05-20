@@ -49,13 +49,10 @@
           </v-toolbar>
           <v-card-text fluid style="height: 100%">
             <v-progress-linear indeterminate v-if="loading" />
-            <vue-json-editor
-              style="height:100%"
-              v-model="json"
-              mode="code"
-              :modes="['code']"
-              :expandedOnStart="true"
-            ></vue-json-editor>
+            <json-editor
+              :value="json"
+              :read-only="false"
+            ></json-editor>
           </v-card-text>
         </v-card>
       </v-col>
@@ -66,12 +63,12 @@
 <script type="ts">
 import kafka from '../services/kafka'
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import VueJsonEditor from 'vue-json-editor/vue-json-editor'
+import JsonEditor from '../components/JsonEditor.vue'
 import data from '../example/data.json'
 
 @Component({
   components: {
-    VueJsonEditor
+    JsonEditor
   }
 })
 export default class Brokers extends Vue {
