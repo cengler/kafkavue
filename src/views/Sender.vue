@@ -142,11 +142,3 @@ export default class Brokers extends Vue {
 }
 
 </script>
-
-<style type="scss">
-
-.jsoneditor-vue {
-  height: 95%;
-}
-
-</style>
