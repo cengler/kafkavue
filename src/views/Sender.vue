@@ -47,11 +47,16 @@
               {{ statusMessage }}
             </v-alert>
           </v-toolbar>
+          <div>
+            valid:{{ isValid }} - array:{{ isArray }}
+          </div>
           <v-card-text fluid style="height: 100%">
             <v-progress-linear indeterminate v-if="loading" />
             <json-editor
-              :value="json"
+              :json.sync="jsonString"
               :read-only="false"
+              :isArray.sync="isArray"
+              :isValid.sync="isValid"
             ></json-editor>
           </v-card-text>
         </v-card>
@@ -72,18 +77,20 @@ import data from '../example/data.json'
   }
 })
 export default class Brokers extends Vue {
-  json = data
+  jsonString = JSON.stringify(data, null, 2)
   topics = []
   topic = null
   time = 1000
   loop = false
+  isArray = false
+  isValid = false
   loading = true
   statusMessage = null
   statusType = 'success'
   startSender () {
     this.loading = true
     const brokers = this.connection.boostrapServers
-    const messages = this.json.map(j => JSON.stringify(j))
+    const messages = JSON.parse(this.jsonString).map(j => JSON.stringify(j))
     kafka.startSender(
       brokers,
       messages,

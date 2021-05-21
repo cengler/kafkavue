@@ -3,18 +3,18 @@
 </template>
 
 <script type="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch, PropSync } from 'vue-property-decorator'
 import { edit } from 'ace-builds'
 import theme from 'ace-builds/src-noconflict/theme-monokai'
 import mode from 'ace-builds/src-noconflict/mode-json'
+import 'ace-builds/webpack-resolver'
 
 @Component({ inheritAttrs: true })
 export default class JSONEditor extends Vue {
-  @Prop({ required: true })
-  value
-
-  @Prop({ required: false, default: false })
-  readOnly
+  @PropSync('json', { type: String }) jsonSync
+  @PropSync('isValid', { type: Boolean }) isValidSync
+  @PropSync('isArray', { type: Boolean }) isArraySync
+  @Prop({ required: false, default: false }) readOnly
 
   editor = null
 
@@ -22,7 +22,8 @@ export default class JSONEditor extends Vue {
     this.setupEditor()
     this.setTheme()
     this.setJSONMode()
-    this.updateValue(this.value)
+    this.externalUpdate(this.jsonSync)
+    this.editor.focus()
   }
 
   setJSONMode () {
@@ -30,16 +31,13 @@ export default class JSONEditor extends Vue {
   }
 
   updateValue (value) {
-    if (typeof value === 'string') {
-      this.editor.setValue(value, 1)
-    } else {
-      this.editor.setValue(JSON.stringify(value, null, 2), 1)
-    }
+    this.editor.setValue(value, 1)
   }
 
-  @Watch
-  watch (newValue) {
-    if (this.editor.value.getValue() !== newValue) {
+  // external update
+  @Watch('value')
+  externalUpdate (newValue) {
+    if (this.editor.getValue() !== newValue) {
       this.updateValue(newValue)
     }
   }
@@ -52,17 +50,31 @@ export default class JSONEditor extends Vue {
     this.editor.setOptions({
       maxLines: Infinity
     })
-    this.editor.getSession().setUseWorker(false)
+    // this.editor.getSession().setUseWorker(false)
     this.editor.getSession().setMode(mode.value)
     this.editor.setFontSize('13px')
     this.editor.setShowPrintMargin(false)
     this.editor.$blockScrolling = Infinity
 
     this.editor.on('change', () => {
-      if (this.editor.getValue() !== this.value) {
-        this.value = this.editor.getValue()
+      if (this.editor.getValue() !== this.jsonSync) {
+        this.jsonSync = this.editor.getValue()
+        this.setStatusFlags()
       }
     })
+  }
+
+  setStatusFlags () {
+    try {
+      const jsonObject = JSON.parse(this.jsonSync)
+      this.isValidSync = true
+      this.isArraySync = Array.isArray(jsonObject)
+      console.log('va', jsonObject)
+    } catch (e) {
+      this.isValidSync = false
+      this.isArraySync = false
+      console.log('in')
+    }
   }
 
   remove () {
