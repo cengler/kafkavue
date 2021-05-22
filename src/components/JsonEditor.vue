@@ -20,25 +20,15 @@ export default class JSONEditor extends Vue {
 
   mounted () {
     this.setupEditor()
-    this.setTheme()
-    this.setJSONMode()
     this.externalUpdate(this.jsonSync)
     this.editor.focus()
   }
 
-  setJSONMode () {
-    this.editor.session.setMode('ace/mode/json')
-  }
-
-  updateValue (value) {
-    this.editor.setValue(value, 1)
-  }
-
   // external update
-  @Watch('value')
+  @Watch('json')
   externalUpdate (newValue) {
     if (this.editor.getValue() !== newValue) {
-      this.updateValue(newValue)
+      this.editor.setValue(newValue, 1)
     }
   }
 
@@ -47,42 +37,33 @@ export default class JSONEditor extends Vue {
       autoScrollEditorIntoView: true,
       readOnly: this.readOnly
     })
-    this.editor.setOptions({
-      maxLines: Infinity
-    })
-    // this.editor.getSession().setUseWorker(false)
+    this.editor.setOptions({ maxLines: Infinity })
     this.editor.getSession().setMode(mode.value)
     this.editor.setFontSize('13px')
     this.editor.setShowPrintMargin(false)
     this.editor.$blockScrolling = Infinity
-
-    this.editor.on('change', () => {
-      if (this.editor.getValue() !== this.jsonSync) {
-        this.jsonSync = this.editor.getValue()
-        this.setStatusFlags()
-      }
+    this.editor.session.setMode('ace/mode/json')
+    this.editor.setTheme(theme)
+    this.editor.session.on('change', () => {
+      const value = this.editor.getSession().getValue()
+      this.jsonSync = value
+      this.setStatusFlags(value)
     })
   }
 
-  setStatusFlags () {
+  setStatusFlags (value) {
     try {
-      const jsonObject = JSON.parse(this.jsonSync)
+      const jsonObject = JSON.parse(value)
       this.isValidSync = true
       this.isArraySync = Array.isArray(jsonObject)
-      console.log('va', jsonObject)
     } catch (e) {
       this.isValidSync = false
       this.isArraySync = false
-      console.log('in')
     }
   }
 
   remove () {
     this.editor.destroy()
-  }
-
-  setTheme () {
-    this.editor.setTheme(theme)
   }
 }
 </script>

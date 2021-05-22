@@ -31,7 +31,7 @@
             ></v-checkbox>
             <v-btn color="primary"
                    small
-                   :disabled="!topicSelected"
+                   :disabled="!topicSelected || !isValid"
                    @click="startSender"
                    class="mr-1">
               <v-icon>mdi-play</v-icon>
@@ -47,9 +47,6 @@
               {{ statusMessage }}
             </v-alert>
           </v-toolbar>
-          <div>
-            valid:{{ isValid }} - array:{{ isArray }}
-          </div>
           <v-card-text fluid style="height: 100%">
             <v-progress-linear indeterminate v-if="loading" />
             <json-editor
@@ -90,7 +87,9 @@ export default class Brokers extends Vue {
   startSender () {
     this.loading = true
     const brokers = this.connection.boostrapServers
-    const messages = JSON.parse(this.jsonString).map(j => JSON.stringify(j))
+    const messages = JSON
+      .parse(this.isArray ? this.jsonString : '[' + this.jsonString + ']')
+      .map(j => JSON.stringify(j))
     kafka.startSender(
       brokers,
       messages,
