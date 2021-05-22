@@ -1,5 +1,13 @@
-import { CompressionCodecs, CompressionTypes, Consumer, Producer, Kafka, ConfigResourceTypes } from 'kafkajs'
+import {
+  CompressionCodecs,
+  CompressionTypes,
+  Consumer,
+  Producer,
+  Kafka,
+  ConfigResourceTypes
+} from 'kafkajs'
 import Connection from '@/model/Connection'
+import Message from './Message'
 // @ts-ignore
 import SnappyCodec from 'kafkajs-snappy'
 import Status, { StatusCode } from '@/model/Status'
@@ -69,7 +77,7 @@ export default class KafkaClient {
     })
   }
 
-  async getMessages (topic: string, filter: string, fromBeginning: boolean, cb: Function) {
+  async getMessages (topic: string, filter: string, fromBeginning: boolean, cb: (message: Message) => void) {
     this.consumer = this.kafka.consumer({
       groupId: this.groupId + new Date() // TODO
     })
@@ -81,15 +89,11 @@ export default class KafkaClient {
       eachMessage: async ({ topic, partition, message }) => {
         const rawMessage = message && message.value ? message.value.toString() : '{}'
         if (this.match(rawMessage, filter)) {
-          const msg = {
-            meta: {
-              topic,
-              partition,
-              key: message.key ? message.key.toString() : 'no key'
-            },
-            msg: JSON.parse(rawMessage)
-          }
-          cb(msg)
+          cb(new Message(
+            topic,
+            partition,
+            message.key ? message.key.toString() : 'no key',
+            JSON.parse(rawMessage)))
         }
       }
     })

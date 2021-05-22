@@ -10,7 +10,7 @@
           dense
           :headers="headers"
           :items="messages"
-          item-key="innerKey"
+          item-key="meta.internalKey"
           :expanded.sync="expanded"
           show-expand
           single-expand
@@ -44,7 +44,35 @@
                 placeholder=""
                 class="mr-3"
               />
-
+              <v-btn :class="{active: !advanced}"
+                     small
+                     fab
+                     text
+                     @click="advanced = !advanced">
+                <v-icon>mdi-chevron-up</v-icon>
+              </v-btn>
+              <v-btn color="error"
+                     small
+                     :disabled="messages && messages.length === 0"
+                     @click="clearMessages"
+                     class="mr-1">
+                <v-icon>mdi-trash-can</v-icon>
+              </v-btn>
+              <v-btn color="primary"
+                     small
+                     :disabled="!topicSelected"
+                     @click="loadMessages"
+                     class="mr-1">
+                <v-icon>mdi-play</v-icon>
+              </v-btn>
+              <v-btn color="primary"
+                     small
+                     :disabled="!topicSelected"
+                     @click="stopConsumer">
+                <v-icon>mdi-stop</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <v-toolbar flat v-if="advanced">
               <v-menu
                 ref="menu"
                 v-model="menu"
@@ -56,11 +84,13 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-combobox
+                    :disabled="true"
                     v-model="dates"
                     multiple
                     chips
                     small-chips
                     label="Dates"
+                    hide-details
                     prepend-icon="mdi-calendar"
                     readonly
                     v-bind="attrs"
@@ -97,33 +127,13 @@
                 hide-details
                 class="mr-3"
               />
-              <v-btn color="error"
-                     small
-                     :disabled="messages && messages.length === 0"
-                     @click="clearMessages"
-                     class="mr-1">
-                <v-icon>mdi-trash-can</v-icon>
-              </v-btn>
-              <v-btn color="primary"
-                     small
-                     :disabled="!topicSelected"
-                     @click="loadMessages"
-                     class="mr-1">
-                <v-icon>mdi-play</v-icon>
-              </v-btn>
-              <v-btn color="primary"
-                     small
-                     :disabled="!topicSelected"
-                     @click="stopConsumer">
-                <v-icon>mdi-stop</v-icon>
-              </v-btn>
             </v-toolbar>
           </template>
           <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length">
               <json-editor
-                :value="item.msg"
-                :read-only="false">
+                :json="JSON.stringify(item.msg, null, 2)"
+                :read-only="true">
               </json-editor>
             </td>
           </template>
@@ -156,10 +166,9 @@ export default class Brokers extends Vue {
   fromBeginning = false
   statusMessage = null
   statusType = 'success'
-  // innerKey for single expand, real key cant be used if null keys exist
-  innerIdIndex = 0
   dates = []
   menu = false
+  advanced = false
 
   dateRangeText () {
     return this.dates.join(' ~ ')
@@ -172,9 +181,7 @@ export default class Brokers extends Vue {
       this.topic,
       this.filter,
       this.fromBeginning,
-      (message) => {
-        this.messages.push({ innerKey: this.innerIdIndex++, ...message })
-      }
+      (message) => this.messages.push(message)
     )
   }
 
@@ -225,19 +232,22 @@ export default class Brokers extends Vue {
 
   cName (h) {
     if (h === 'meta.key') return 'Key'
+    if (h === 'meta.internalKey') return 'KafkaVue key'
     if (h === 'meta.partition') return 'Partition'
     else return h.charAt(0).toUpperCase() + h.slice(1)
   }
 
   cValue (h) {
     if (h === 'meta.key') return 'meta.key'
+    if (h === 'meta.internalKey') return 'meta.internalKey'
     if (h === 'meta.partition') return 'meta.partition'
+    if (h === 'msg') return 'msg' // TODO
     else return 'msg.' + h
   }
 
   @Watch('columnsString')
   onColumnsChange () {
-    this.headers = (this.columnsString ? this.columnsString : 'meta.key,meta.partition')
+    this.headers = (this.columnsString ? this.columnsString : 'meta.key,meta.partition,meta.internalKey')
       .split(',')
       .map(h => h.trim())
       .map(h => ({ text: this.cName(h), value: this.cValue(h), sortable: true }))
@@ -245,3 +255,9 @@ export default class Brokers extends Vue {
 }
 
 </script>
+
+<style lang="scss" scoped>
+.v-btn.active .v-icon {
+  transform: rotate(-180deg);
+}
+</style>
