@@ -1,15 +1,8 @@
-import {
-  CompressionCodecs,
-  CompressionTypes,
-  Consumer,
-  Producer,
-  Kafka,
-  ConfigResourceTypes,
-  GroupOverview
-} from 'kafkajs'
+import { CompressionCodecs, CompressionTypes, Consumer, Producer, Kafka, ConfigResourceTypes } from 'kafkajs'
+import Connection from '@/model/Connection'
 // @ts-ignore
 import SnappyCodec from 'kafkajs-snappy'
-import Status, {StatusCode} from "@/model/Status";
+import Status, { StatusCode } from '@/model/Status'
 CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
 
 const clientId = 'kafkavue'
@@ -21,13 +14,16 @@ export default class KafkaClient {
   producer: Producer | null = null
   timer: NodeJS.Timeout | null = null
 
-  constructor(kafka: Kafka) {
-    this.kafka = kafka
+  constructor (c: Connection) {
+    this.kafka = new Kafka({
+      clientId: 'kafkavue.' + c.name, // TODO
+      brokers: c.boostrapServers
+    })
   }
 
   getTopicsMetadata () {
     return this.kafka.admin().listTopics()
-      .then(ts => this.kafka.admin().fetchTopicMetadata({topics: ts}))
+      .then(ts => this.kafka.admin().fetchTopicMetadata({ topics: ts }))
   }
 
   fetchTopicOffsets (topic: string) {
@@ -54,7 +50,7 @@ export default class KafkaClient {
   createTopic (topic: string, replicationFactor: number, numPartitions: number) {
     return this.kafka
       .admin()
-      .createTopics({topics: [{topic, numPartitions, replicationFactor}]})
+      .createTopics({ topics: [{ topic, numPartitions, replicationFactor }] })
   }
 
   private match (rawMessage: string, filter: string) {
@@ -78,11 +74,11 @@ export default class KafkaClient {
       groupId: this.groupId + new Date() // TODO
     })
     await this.consumer.connect()
-    await this.consumer.subscribe({topic, fromBeginning})
+    await this.consumer.subscribe({ topic, fromBeginning })
     await this.consumer.run({
       autoCommit: false,
       partitionsConsumedConcurrently: await this.getTopicPartitions(topic),
-      eachMessage: async ({topic, partition, message}) => {
+      eachMessage: async ({ topic, partition, message }) => {
         const rawMessage = message && message.value ? message.value.toString() : '{}'
         if (this.match(rawMessage, filter)) {
           const msg = {
@@ -111,14 +107,18 @@ export default class KafkaClient {
     let i = 0
     await this.producer.connect()
     this.timer = setInterval(() => {
-      const message = {key: 'key' + i, value: messages[i % messages.length]}
-      this.producer?.send({ // TODO
-        topic,
-        messages: [message]
-      }).then(r => console.log('Sent: ', r.length ? r[0].baseOffset : 'unk'))
+      const message = { key: 'key' + i, value: messages[i % messages.length] }
+      if (this.producer) {
+        this.producer.send({
+          topic,
+          messages: [message]
+        }).then(r => console.log('Sent: ', r.length ? r[0].baseOffset : 'unk'))
+      }
       i++
       if (!loop && i === messages.length) {
-        // clearInterval(this.timer) TODO
+        if (this.timer) {
+          clearInterval(this.timer)
+        }
       }
     }, time)
   }
@@ -148,10 +148,18 @@ export default class KafkaClient {
         .then(a => a.groups))
   }
 
-  static test (brokersString: string) {
+  getBrokers () {
+    return this.kafka.admin().describeCluster()
+      .then(result => {
+        return result.brokers
+      })
+  }
+
+  static test (brokersString: string): Promise<void> {
     const brokers = brokersString.split(',')
     const kafka = new Kafka({
-      clientId, brokers,
+      clientId,
+      brokers,
       retry: { retries: 1 }
     })
     return kafka.admin().connect()

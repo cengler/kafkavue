@@ -22,8 +22,7 @@ export default class Offset extends Vue {
   offset=null
 
   created () {
-    const brokers = this.connection.boostrapServers
-    return kafka.forBrokers(brokers).fetchTopicOffsets(this.topic.name)
+    return kafka.getKafka(this.connection).fetchTopicOffsets(this.topic.name)
       .then(ts => {
         this.offset = ts.map(t => t.high - t.low).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
       })

@@ -160,7 +160,6 @@ export default class Brokers extends Vue {
   innerIdIndex = 0
   dates = []
   menu = false
-  kafka = kafka.forBrokers(this.connection.boostrapServers)
 
   dateRangeText () {
     return this.dates.join(' ~ ')
@@ -169,7 +168,7 @@ export default class Brokers extends Vue {
   loadMessages () {
     this.messages = []
     this.loading = true
-    this.kafka.getMessages(
+    kafka.getKafka(this.connection).getMessages(
       this.topic,
       this.filter,
       this.fromBeginning,
@@ -191,7 +190,7 @@ export default class Brokers extends Vue {
     this.topics = []
     this.topic = null
     this.loading = true
-    this.kafka.getTopics()
+    kafka.getKafka(this.connection).getTopics()
       .then(topics => {
         this.topics = topics
         this.loading = false
@@ -211,7 +210,7 @@ export default class Brokers extends Vue {
   }
 
   stopConsumer () {
-    this.kafka.stopConsumer()
+    kafka.getKafka(this.connection).stopConsumer()
       .then(s => {
         this.loading = false
         this.statusMessage = s.message

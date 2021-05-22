@@ -64,8 +64,7 @@ export default class TopicConfig extends Vue {
   }
 
   load () {
-    const brokers = this.connection.boostrapServers
-    kafka.describeTopicConfigs(brokers, this.topic.name)
+    kafka.getKafka(this.connection).describeTopicConfigs(this.topic.name)
       .then(cs => {
         this.configs = cs
       })

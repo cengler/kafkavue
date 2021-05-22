@@ -55,7 +55,6 @@ export default class Brokers extends Vue {
   loading = true
   search = ''
   expanded = []
-  kafka = kafka.forBrokers(this.connection.boostrapServers)
   headers = [
     {
       text: 'Group ID',
@@ -86,7 +85,7 @@ export default class Brokers extends Vue {
   load () {
     this.consumers = []
     this.loading = true
-    this.kafka.getConsumersMetadata()
+    kafka.getKafka(this.connection).getConsumersMetadata()
       .then(consumers => {
         this.consumers = consumers
         this.loading = false
