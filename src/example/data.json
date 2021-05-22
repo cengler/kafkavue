@@ -1,20 +1,13 @@
 [
-  {"firstname": "John", "lastname" : "Smith", "city" : "Boston", "state" : "MA", "children": [
+  {"firstname": "John", "lastname" : "Smith", "children": [
     {"name" : "Callie", "age" : 5},
-    {"name" : "Griffin", "age" :3},
     {"name" : "Luke", "age" : 1}
   ]
   },
   {"firstname": "Henry", "lastname" : "Rhodes", "city" : "New York", "state" : "NY", "children": [
-    {"name" : "Howard", "age" : 15},
-    {"name" : "Robert", "age" : 11}
+    {"name" : "Howard", "age" : 15}
   ]
   },
-  {"firstname": "Allison", "lastname" : "Berman", "city" : "Los Angeles", "state" : "CA", "children": [
-    {"name" : "Jeff", "age" : 35},
-    {"name" : "Roxanne", "age" :33},
-    {"name" : "Claudia", "age" : 31},
-    {"name" : "Denzel", "age" : 11}
-  ]
+  {"firstname": "Allison", "lastname" : "Berman", "city" : "Los Angeles", "state" : "CA", "children": []
   }
 ]

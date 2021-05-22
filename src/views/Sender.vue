@@ -31,7 +31,7 @@
             ></v-checkbox>
             <v-btn color="primary"
                    small
-                   :disabled="!topicSelected"
+                   :disabled="!topicSelected || !isValid"
                    @click="startSender"
                    class="mr-1">
               <v-icon>mdi-play</v-icon>
@@ -49,13 +49,12 @@
           </v-toolbar>
           <v-card-text fluid style="height: 100%">
             <v-progress-linear indeterminate v-if="loading" />
-            <vue-json-editor
-              style="height:100%"
-              v-model="json"
-              mode="code"
-              :modes="['code']"
-              :expandedOnStart="true"
-            ></vue-json-editor>
+            <json-editor
+              :json.sync="jsonString"
+              :read-only="false"
+              :isArray.sync="isArray"
+              :isValid.sync="isValid"
+            ></json-editor>
           </v-card-text>
         </v-card>
       </v-col>
@@ -66,20 +65,22 @@
 <script type="ts">
 import kafka from '../services/kafka'
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import VueJsonEditor from 'vue-json-editor/vue-json-editor'
+import JsonEditor from '../components/JsonEditor.vue'
 import data from '../example/data.json'
 
 @Component({
   components: {
-    VueJsonEditor
+    JsonEditor
   }
 })
 export default class Brokers extends Vue {
-  json = data
+  jsonString = JSON.stringify(data, null, 2)
   topics = []
   topic = null
   time = 1000
   loop = false
+  isArray = false
+  isValid = false
   loading = true
   statusMessage = null
   statusType = 'success'
@@ -88,8 +89,10 @@ export default class Brokers extends Vue {
   startSender () {
     this.loading = true
     const brokers = this.connection.boostrapServers
-    const messages = this.json.map(j => JSON.stringify(j))
-    this.kafka.startSender(
+    const messages = JSON
+      .parse(this.isArray ? this.jsonString : '[' + this.jsonString + ']')
+      .map(j => JSON.stringify(j))
+    kafka.startSender(
       brokers,
       messages,
       this.topic,
@@ -146,11 +149,3 @@ export default class Brokers extends Vue {
 }
 
 </script>
-
-<style type="scss">
-
-.jsoneditor-vue {
-  height: 95%;
-}
-
-</style>
