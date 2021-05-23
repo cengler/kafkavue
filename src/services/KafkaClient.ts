@@ -11,8 +11,12 @@ import Message from './Message'
 // @ts-ignore
 import SnappyCodec from 'kafkajs-snappy'
 import Status, { StatusCode } from '@/model/Status'
-CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
+import { Cache, CacheContainer } from 'node-ts-cache'
+// @ts-ignore
+import { MemoryStorage } from 'node-ts-cache-storage-memory'
 
+CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
+const userCache = new CacheContainer(new MemoryStorage())
 const clientId = 'kafkavue'
 
 export default class KafkaClient {
@@ -51,7 +55,9 @@ export default class KafkaClient {
       .then(dc => dc.resources[0].configEntries)
   }
 
+  @Cache(userCache, { ttl: 60 })
   getTopics () {
+    console.log('topics load')
     return this.kafka.admin().listTopics()
   }
 

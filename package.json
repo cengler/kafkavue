@@ -26,6 +26,8 @@
     "kafkajs": "^1.15.0",
     "kafkajs-snappy": "^1.1.0",
     "lodash": "^4.14.169",
+    "node-ts-cache": "^4.2.3",
+    "node-ts-cache-storage-memory": "^4.2.3",
     "roboto-fontface": "*",
     "ssri": "^8.0.1",
     "three-dots": "^0.2.1",
