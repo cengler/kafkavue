@@ -120,8 +120,7 @@ export default class AddTopic extends Vue {
   }
 
   save () {
-    const brokers = this.connection.boostrapServers
-    kafka.createTopic(brokers,
+    kafka.getKafka(this.connection).createTopic(
       this.editedItem.topic,
       this.editedItem.replicationFactor,
       this.editedItem.partitions)

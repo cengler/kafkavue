@@ -1,194 +1,24 @@
-import { CompressionCodecs, CompressionTypes, Consumer, Producer, Kafka, ConfigResourceTypes } from 'kafkajs'
-// @ts-ignore
-import SnappyCodec from 'kafkajs-snappy'
-import Status, { StatusCode } from '@/model/Status'
+import KafkaClient from '@/services/KafkaClient'
+import Connection from '@/model/Connection'
 
-CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
-const clientId = 'kafkavue' // TODO ver si es fijo
-const groupId = 'kafkavue'
-let consumer: Consumer
-let producer: Producer
-let timer: NodeJS.Timeout
+const kafkaList: { [id: string]: KafkaClient } = {}
 
-const getTopicsMetadata = (brokers: string[]) => {
-  const kafka = new Kafka({
-    clientId,
-    brokers
-  })
-  return kafka.admin().listTopics()
-    .then(ts => kafka.admin().fetchTopicMetadata({ topics: ts }))
-}
-
-const fetchTopicOffsets = (brokers: string[], topic: string) => {
-  const kafka = new Kafka({
-    clientId,
-    brokers
-  })
-  return kafka.admin().fetchTopicOffsets(topic)
-}
-
-const describeTopicConfigs = (brokers: string[], topic: string) => {
-  const kafka = new Kafka({
-    clientId,
-    brokers
-  })
-  return kafka.admin().describeConfigs({
-    includeSynonyms: false,
-    resources: [
-      {
-        type: ConfigResourceTypes.TOPIC,
-        name: topic
-      }
-    ]
-  })
-    .then(dc => dc.resources[0].configEntries)
-}
-
-const getTopics = (brokers: string[]) => {
-  const kafka = new Kafka({
-    clientId,
-    brokers
-  })
-  return kafka.admin().listTopics()
-}
-
-const createTopic = (brokers: string[], topic: string, replicationFactor: number, numPartitions: number) => {
-  const kafka = new Kafka({
-    clientId,
-    brokers
-  })
-  return kafka.admin().createTopics({ topics: [{ topic, numPartitions, replicationFactor }] })
-}
-
-const match = (rawMessage: string, filter: string) => {
-  if (!filter) return true
-  const words = filter.split(/\s/)
-  return words.every(w => rawMessage.includes(w))
-}
-
-const getMessages = async (brokers: string[], topic: string, filter: string, fromBeginning: boolean, cb: Function) => {
-  const kafka = new Kafka({
-    clientId,
-    brokers
-  })
-  consumer = kafka.consumer({
-    groupId: groupId + new Date() // TODO
-  })
-  await consumer.connect()
-  await consumer.subscribe({ topic, fromBeginning })
-  await consumer.run({
-    autoCommit: false,
-    eachMessage: async ({ topic, partition, message }) => {
-      const rawMessage = message && message.value ? message.value.toString() : '{}'
-      if (match(rawMessage, filter)) {
-        const msg = {
-          meta: {
-            topic,
-            partition,
-            key: message.key ? message.key.toString() : 'no key'
-          },
-          msg: JSON.parse(rawMessage)
-        }
-        cb(msg)
-      }
-    }
-  })
-  setTimeout(() => {
-    consumer.stop()
-  }, 1000000)
-}
-
-const startSender = async (brokers: string[], messages: string[], topic: string, time: number, loop: boolean) => {
-  const kafka = new Kafka({
-    clientId,
-    brokers
-  })
-  producer = kafka.producer({
-    allowAutoTopicCreation: false
-  })
-  let i = 0
-  await producer.connect()
-  timer = setInterval(() => {
-    const message = { key: 'key' + i, value: messages[i % messages.length] }
-    producer.send({
-      topic,
-      messages: [message]
-    }).then(r => console.log('Sent: ', r.length ? r[0].baseOffset : 'unk'))
-    i++
-    if (!loop && i === messages.length) {
-      clearInterval(timer)
-    }
-  }, time)
-}
-
-const stopSender = () => {
-  if (timer) clearInterval(timer)
-  if (producer) producer.disconnect().then(() => console.log('Producer disconnected'))
-}
-
-const stopConsumer = (): Promise<Status> => {
-  if (consumer) {
-    return consumer.stop()
-      .then(() => new Status('Stopped ok', StatusCode.OK))
-      .catch(e => new Status(`Error stopping consumer ${e}`, StatusCode.ERROR))
+const getKafka = (c: Connection): KafkaClient => {
+  const kafka: KafkaClient | null = kafkaList[c.id]
+  if (kafka) {
+    return kafka
   } else {
-    return Promise.resolve(new Status('No consumer to stop', StatusCode.ERROR))
+    const kafkaClient = new KafkaClient(c)
+    kafkaList[c.id] = kafkaClient
+    return kafkaClient
   }
 }
 
-const test = (brokersString: string) => {
-  const brokers = brokersString.split(',')
-  const kafka = new Kafka({
-    clientId,
-    brokers,
-    retry: {
-      retries: 1
-    }
-  })
-  return kafka.admin().connect()
-}
-
-const getBrokers = (brokers: string[]) => {
-  const kafka = new Kafka({
-    clientId,
-    brokers
-  })
-  return kafka.admin().describeCluster()
-    .then(result => {
-      return result.brokers
-    })
-}
-
-const getConsumers = (brokers: string[]) => {
-  const kafka = new Kafka({
-    clientId,
-    brokers
-  })
-  return kafka.admin().listGroups().then(result => result.groups)
-}
-
-const getConsumersMetadata = (brokers: string[]) => {
-  const kafka = new Kafka({
-    clientId,
-    brokers
-  })
-  return kafka.admin().listGroups()
-    .then(result => kafka.admin().describeGroups(result.groups.map(g => g.groupId))
-      .then(a => a.groups))
+const test = (brokersString: string): Promise<void> => {
+  return KafkaClient.test(brokersString)
 }
 
 export default {
-  getTopics,
-  getTopicsMetadata,
-  getMessages,
   test,
-  getBrokers,
-  getConsumers,
-  stopConsumer,
-  startSender,
-  stopSender,
-  createTopic,
-  getConsumersMetadata,
-  fetchTopicOffsets,
-  describeTopicConfigs
+  getKafka
 }

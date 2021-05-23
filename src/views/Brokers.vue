@@ -58,8 +58,7 @@ export default class Brokers extends Vue {
   load () {
     this.brokers = []
     this.loading = true
-    const brokers = this.connection.boostrapServers
-    kafka.getBrokers(brokers)
+    kafka.getKafka(this.connection).getBrokers()
       .then(brokers => {
         this.brokers = brokers
         this.loading = false
