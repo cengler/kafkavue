@@ -76,6 +76,7 @@
     "vuetify-loader": "^1.7.2"
   },
   "resolutions": {
-    "ssri": "^8.0.1"
+    "ssri": "^8.0.1",
+    "postcss": "^8.2.10"
   }
 }
