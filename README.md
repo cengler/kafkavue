@@ -1,6 +1,7 @@
 # kafkavue
 
-![example workflow](https://github.com/cengler/kafkavue/actions/workflows/test.yml/badge.svg)
+![tests](https://github.com/cengler/kafkavue/actions/workflows/test.yml/badge.svg)
+![audit](https://github.com/cengler/kafkavue/actions/workflows/audit.yml/badge.svg)
 
 ## Project setup
 ```
