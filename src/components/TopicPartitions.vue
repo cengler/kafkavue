@@ -2,18 +2,22 @@
   <v-data-table
     dense
     :headers="headers"
-    :items="topic.partitions"
+    :items="partitions"
+    :items-per-page="1000"
   >
   </v-data-table>
 </template>
 
 <script type="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
+import kafka from '@/services/kafka'
 
 @Component({ inheritAttrs: true })
 export default class TopicExtra extends Vue {
   @Prop({ required: true })
   topic
+
+  partitions = []
 
   headers = [
     {
@@ -37,6 +41,21 @@ export default class TopicExtra extends Vue {
       value: 'isr'
     }
   ]
+
+  created () {
+    this.load()
+  }
+
+  load () {
+    kafka.getKafka(this.connection).getTopicMetadata(this.topic)
+      .then(m => {
+        this.partitions = m.partitions
+      })
+  }
+
+  get connection () {
+    return this.$store.getters.connection
+  }
 }
 
 </script>
