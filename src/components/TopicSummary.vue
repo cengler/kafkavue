@@ -1,11 +1,11 @@
 <template>
   <v-container fluid class="ma-0 pa-0">
     <v-col class="ma-0 pa-0">
-      <v-row>
-        <v-col>
-          <summary-card class="ma-0 pa-0" title="Messages" sub-title="Total Count" :value="offset"/>
+      <v-row class="ma-0 pa-0">
+        <v-col class="ml-0 pa-0 pr-3">
+          <summary-card title="Messages" sub-title="Total Count" :value="offset"/>
         </v-col>
-        <v-col>
+        <v-col class="ma-0 pa-0">
           <summary-card title="Messages" sub-title="Total Count" :value="offset"/>
         </v-col>
       </v-row>

@@ -32,8 +32,7 @@ import kafka from '@/services/kafka'
 
 @Component({ inheritAttrs: true })
 export default class TopicConfig extends Vue {
-  @Prop({ required: true })
-  topic
+  @Prop({ required: true }) topic
 
   configs = []
 

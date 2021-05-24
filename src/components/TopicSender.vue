@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid style="height: 100%">
+  <v-container fluid class="ma-0 pa-0" style="height: 100%">
     <v-row fluid style="height: 100%">
       <v-col cols="12" fluid style="height: 100%">
         <v-card fluid style="height: 100%">
@@ -64,7 +64,7 @@
 
 <script type="ts">
 import kafka from '../services/kafka'
-import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
 import JsonEditor from './JsonEditor.vue'
 import data from '../example/data.json'
 
@@ -74,14 +74,14 @@ import data from '../example/data.json'
   }
 })
 export default class Brokers extends Vue {
+  @Prop({ required: true }) topic
+
   jsonString = JSON.stringify(data, null, 2)
-  topics = []
-  topic = null
   time = 1000
   loop = false
   isArray = false
   isValid = false
-  loading = true
+  loading = false
   statusMessage = null
   statusType = 'success'
 
@@ -96,24 +96,6 @@ export default class Brokers extends Vue {
       this.time,
       this.loop
     )
-  }
-
-  created () {
-    this.loadTopics()
-    if (this.$route.params.topic) {
-      this.topic = this.$route.params.topic
-    }
-  }
-
-  loadTopics () {
-    this.topics = []
-    this.topic = null
-    this.loading = true
-    kafka.getKafka(this.connection).getTopics()
-      .then(topics => {
-        this.topics = topics
-        this.loading = false
-      })
   }
 
   get connection () {

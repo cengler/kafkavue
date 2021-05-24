@@ -30,10 +30,10 @@
         <topic-partitions :topic="topic"/>
       </v-tab-item>
       <v-tab-item value="tab-search">
-        <topic-search/>
+        <topic-search :topic="topic"/>
       </v-tab-item>
       <v-tab-item value="tab-sender">
-        <topic-sender/>
+        <topic-sender :topic="topic"/>
       </v-tab-item>
     </v-tabs-items>
   </v-tabs>
