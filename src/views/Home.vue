@@ -44,6 +44,10 @@ import { Vue, Component } from 'vue-property-decorator'
 import Connection from '@/model/Connection'
 @Component
 export default class Home extends Vue {
+  created () {
+    this.setBreadcrumbs()
+  }
+
   get connections () {
     return this.$store.getters.connections
   }
@@ -64,6 +68,16 @@ export default class Home extends Vue {
 
   select (item: Connection) {
     this.$store.commit('setSelectedConnection', item)
+  }
+
+  setBreadcrumbs () {
+    this.$store.commit('setBreadcrumbs', [
+      {
+        text: 'Home',
+        disabled: true,
+        to: '/home'
+      }
+    ])
   }
 }
 </script>

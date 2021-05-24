@@ -32,12 +32,12 @@
               {{ item.partitions.length }}
           </template>
           <template v-slot:item.actions="{ item }">
-            <v-icon small class="mr-2" @click="searchItem(item)">
+            <!--v-icon small class="mr-2" @click="searchItem(item)">
               mdi-magnify
             </v-icon>
             <v-icon small class="mr-2" @click="sendItem(item)">
               mdi-send
-            </v-icon>
+            </v-icon-->
             <v-icon small @click="goTopic(item)">
               mdi-cog
             </v-icon>
@@ -100,6 +100,7 @@ export default class Brokers extends Vue {
 
   created () {
     this.load()
+    this.setBreadcrumbs()
   }
 
   load () {
@@ -147,6 +148,16 @@ export default class Brokers extends Vue {
   @Watch('connection')
   onPropertyChanged () {
     this.load()
+  }
+
+  setBreadcrumbs () {
+    this.$store.commit('setBreadcrumbs', [
+      {
+        text: 'Topics',
+        disabled: true,
+        to: '/topics'
+      }
+    ])
   }
 }
 

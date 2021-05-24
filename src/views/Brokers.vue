@@ -53,6 +53,7 @@ export default class Brokers extends Vue {
 
   created () {
     this.load()
+    this.setBreadcrumbs()
   }
 
   load () {
@@ -72,6 +73,16 @@ export default class Brokers extends Vue {
   @Watch('connection')
   onPropertyChanged () {
     this.load()
+  }
+
+  setBreadcrumbs () {
+    this.$store.commit('setBreadcrumbs', [
+      {
+        text: 'Brokers',
+        disabled: true,
+        to: '/brokers'
+      }
+    ])
   }
 }
 

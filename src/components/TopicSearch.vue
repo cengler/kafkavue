@@ -147,7 +147,7 @@
 import kafka from '../services/kafka'
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { StatusCode } from '@/model/Status'
-import JsonEditor from '../components/JsonEditor.vue'
+import JsonEditor from './JsonEditor.vue'
 
 @Component({
   components: {
