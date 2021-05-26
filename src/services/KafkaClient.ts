@@ -38,6 +38,11 @@ export default class KafkaClient {
       .then(ts => this.kafka.admin().fetchTopicMetadata({ topics: ts }))
   }
 
+  getTopicMetadata (topic: string) {
+    return this.kafka.admin().fetchTopicMetadata({ topics: [topic] })
+      .then(tp => tp.topics[0])
+  }
+
   fetchTopicOffsets (topic: string) {
     return this.kafka.admin().fetchTopicOffsets(topic)
   }

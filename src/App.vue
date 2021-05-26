@@ -7,7 +7,7 @@
       <template v-slot:prepend>
         <v-list-item two-line>
           <v-list-item-avatar>
-            <img src="icon.png">
+            <v-img src="/icon.png"/>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>Kafka Vue</v-list-item-title>
@@ -32,7 +32,9 @@
 
     <v-app-bar app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
-      <v-toolbar-title>{{ viewName }}</v-toolbar-title>
+      <v-toolbar-title>
+        <v-breadcrumbs large :items="breadcrumbs"></v-breadcrumbs>
+      </v-toolbar-title>
       <v-spacer/>
       <v-btn icon class="ml-2 mr-2" to="/edit">
         <v-icon class="fas fa-plus-circle"></v-icon>
@@ -45,6 +47,7 @@
         item-text="name"
         v-model="connection"
         return-object
+        style="max-width: 400px"
         flat
         solo-inverted
         hide-details
@@ -96,21 +99,15 @@ export default class App extends Vue {
       title: 'Consumers'
     },
     {
-      icon: 'fas fa-search',
-      link: '/search',
-      title: 'Search'
-    },
-    {
-      icon: 'fas fa-paper-plane',
-      link: '/sender',
-      title: 'Sender'
-    },
-    {
       icon: 'fas fa-cog',
       link: '/',
       title: 'Setup'
     }
   ]
+
+  get breadcrumbs () {
+    return this.$store.getters.breadcrumbs
+  }
 
   created () {
     this.$vuetify.theme.dark = true

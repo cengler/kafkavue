@@ -8,11 +8,17 @@ Vue.use(Vuex)
 interface State {
   connections: Array<Connection>;
   selectedConnection: Connection | null;
+  breadcrumbs: {
+    text: string;
+    disabled: boolean;
+    to: string;
+  }[];
 }
 
 const state: State = {
   connections: electronStore.getConnections(),
-  selectedConnection: electronStore.getConnection()
+  selectedConnection: electronStore.getConnection(),
+  breadcrumbs: []
 }
 
 export default new Vuex.Store({
@@ -23,9 +29,15 @@ export default new Vuex.Store({
     },
     connection (state): Connection | null {
       return state.selectedConnection
+    },
+    breadcrumbs (state): { text: string; disabled: boolean; to: string }[] {
+      return state.breadcrumbs
     }
   },
   mutations: {
+    setBreadcrumbs (state, breadcrumbs: { text: string; disabled: boolean; to: string }[]) {
+      state.breadcrumbs = breadcrumbs
+    },
     setConnections (state, connections: Array<Connection>) {
       state.connections = connections
       electronStore.setConnections(connections)

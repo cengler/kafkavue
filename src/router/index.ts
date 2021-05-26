@@ -11,11 +11,6 @@ const routes: Array<RouteConfig> = [
     component: Home
   },
   {
-    path: '/search',
-    name: 'Search',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Search.vue')
-  },
-  {
     path: '/edit',
     name: 'Edit',
     props: true,
@@ -32,14 +27,14 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Topics.vue')
   },
   {
+    path: '/topic/:topic',
+    name: 'Topic',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Topic.vue')
+  },
+  {
     path: '/consumers',
     name: 'Consumers',
     component: () => import(/* webpackChunkName: "about" */ '../views/Consumers.vue')
-  },
-  {
-    path: '/sender',
-    name: 'Sender',
-    component: () => import(/* webpackChunkName: "sender" */ '../views/Sender.vue')
   }
 ]
 

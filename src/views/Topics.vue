@@ -9,17 +9,8 @@
           :loading="loading"
           :search="search"
           item-key="name"
-          single-expand
-          :expanded="expanded"
-          show-expand
           :items-per-page="100"
         >
-          <template v-slot:expanded-item="{ headers, item }">
-            <td :colspan="headers.length">
-              <topic-config :topic="item" />
-              <topic-extra :topic="item" />
-            </td>
-          </template>
           <template v-slot:top>
             <v-toolbar flat>
               <v-text-field
@@ -41,11 +32,14 @@
               {{ item.partitions.length }}
           </template>
           <template v-slot:item.actions="{ item }">
-            <v-icon small class="mr-2" @click="searchItem(item)">
+            <!--v-icon small class="mr-2" @click="searchItem(item)">
               mdi-magnify
             </v-icon>
-            <v-icon small @click="sendItem(item)">
+            <v-icon small class="mr-2" @click="sendItem(item)">
               mdi-send
+            </v-icon-->
+            <v-icon small @click="goTopic(item)">
+              mdi-cog
             </v-icon>
           </template>
         </v-data-table>
@@ -66,15 +60,11 @@
 import kafka from '../services/kafka'
 import { Vue, Component, Watch } from 'vue-property-decorator'
 import AddTopic from '../components/AddTopic'
-import TopicExtra from '../components/TopicExtra'
-import TopicConfig from '../components/TopicConfig'
 import Offset from '../components/Offset'
 
 @Component({
   components: {
     AddTopic,
-    TopicExtra,
-    TopicConfig,
     Offset
   }
 })
@@ -84,7 +74,6 @@ export default class Brokers extends Vue {
   loading = true
   snackbar = false
   snackbarText = null
-  expanded = []
   headers = [
     {
       text: 'Name',
@@ -111,6 +100,7 @@ export default class Brokers extends Vue {
 
   created () {
     this.load()
+    this.setBreadcrumbs()
   }
 
   load () {
@@ -149,9 +139,25 @@ export default class Brokers extends Vue {
     })
   }
 
+  goTopic (item) {
+    this.$router.push({
+      name: 'Topic', params: { topic: item.name }
+    })
+  }
+
   @Watch('connection')
   onPropertyChanged () {
     this.load()
+  }
+
+  setBreadcrumbs () {
+    this.$store.commit('setBreadcrumbs', [
+      {
+        text: 'Topics',
+        disabled: true,
+        to: '/topics'
+      }
+    ])
   }
 }
 

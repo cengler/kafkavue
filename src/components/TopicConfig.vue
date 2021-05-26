@@ -3,6 +3,7 @@
     dense
     :headers="headers"
     :items="configs"
+    :items-per-page="1000"
   >
     <template v-slot:item.isDefault="{ item }">
       <v-simple-checkbox
@@ -31,8 +32,7 @@ import kafka from '@/services/kafka'
 
 @Component({ inheritAttrs: true })
 export default class TopicConfig extends Vue {
-  @Prop({ required: true })
-  topic
+  @Prop({ required: true }) topic
 
   configs = []
 
@@ -64,7 +64,7 @@ export default class TopicConfig extends Vue {
   }
 
   load () {
-    kafka.getKafka(this.connection).describeTopicConfigs(this.topic.name)
+    kafka.getKafka(this.connection).describeTopicConfigs(this.topic)
       .then(cs => {
         this.configs = cs
       })

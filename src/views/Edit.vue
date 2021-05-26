@@ -65,6 +65,22 @@ export default class Edit extends Vue {
     }
     this.name = this.$route.params.name
     this.bootstrapServersString = this.$route.params.bootstrapServersString
+    this.setBreadcrumbs()
+  }
+
+  setBreadcrumbs () {
+    this.$store.commit('setBreadcrumbs', [
+      {
+        text: 'Home',
+        disabled: false,
+        to: '/'
+      },
+      {
+        text: 'Edit',
+        disabled: true,
+        to: '/edit'
+      }
+    ])
   }
 
   validHost (v: string) {
