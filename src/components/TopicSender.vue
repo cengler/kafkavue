@@ -4,16 +4,6 @@
       <v-col cols="12" fluid style="height: 100%">
         <v-card fluid style="height: 100%">
           <v-toolbar flat>
-            <v-autocomplete
-              label="Topic"
-              placeholder="Select a topic"
-              :items="topics"
-              v-model="topic"
-              dense
-              hide-details
-              item-text="name"
-              class="mr-3"
-            />
             <v-text-field
               label="Time between messages"
               dense
