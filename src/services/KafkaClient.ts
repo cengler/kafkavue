@@ -4,7 +4,7 @@ import {
   Consumer,
   Producer,
   Kafka,
-  ConfigResourceTypes
+  ConfigResourceTypes, Admin, ValueOf, AdminEvents
 } from 'kafkajs'
 import Connection from '@/model/Connection'
 import Message from './Message'
@@ -14,6 +14,8 @@ import Status, { StatusCode } from '@/model/Status'
 import { Cache, CacheContainer } from 'node-ts-cache'
 // @ts-ignore
 import { MemoryStorage } from 'node-ts-cache-storage-memory'
+import { PubSub } from 'pubsub-ts'
+import KafkaPoolManager from '@/services/KafkaPoolManager'
 
 CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
 const userCache = new CacheContainer(new MemoryStorage())
@@ -24,17 +26,38 @@ export default class KafkaClient {
   groupId = 'kafkavue'
   consumer: Consumer | null = null
   producer: Producer | null = null
+  admin: Admin
   timer: NodeJS.Timeout | null = null
+  publisher: PubSub.Publisher
+  provider: KafkaPoolManager
 
-  constructor (c: Connection) {
+  constructor (c: Connection, publisher: PubSub.Publisher) {
     this.kafka = new Kafka({
       clientId: 'kafkavue.' + c.name, // TODO
       brokers: c.boostrapServers
     })
+    this.admin = this.kafka.admin()
+    this.publisher = publisher
+    console.log('antes')
+    this.provider = new KafkaPoolManager(this.kafka, publisher)
+    console.log('despues')
+    this.registerListeners()
+  }
+
+  async init () {
+    console.log('initializiing')
+    await this.provider.initialized()
+    console.log('finished')
+  }
+
+  getAdmin () {
+    console.log('DEF')
+    return this.provider.getAdmin()
   }
 
   getTopicsMetadata () {
-    return this.kafka.admin().listTopics()
+    console.log('ABC')
+    return this.getAdmin().listTopics()
       .then(ts => this.kafka.admin().fetchTopicMetadata({ topics: ts }))
   }
 
@@ -164,10 +187,34 @@ export default class KafkaClient {
   }
 
   getBrokers () {
-    return this.kafka.admin().describeCluster()
+    return this.admin.describeCluster()
       .then(result => {
+        this.admin.disconnect().then(() => console.log('DISC'))
         return result.brokers
       })
+  }
+
+  registerListeners () {
+    Object.values(this.admin.events).forEach((event: ValueOf<AdminEvents>) => {
+      this.admin.on(event, () => this.publisher.notify(event, null))
+    })
+    Object.values(this.admin.events).forEach((event: ValueOf<AdminEvents>) => {
+      this.admin.on(event, () => this.publisher.notify(event, null))
+    })
+    // this.admin.events.forEach(e => {})
+    for (const adminEventsKey in this.admin.events) {
+      const a = 'dsf'
+      // this.admin.on(a, () => console.log('abc'))
+      console.log('AQUI', this.admin.events)
+    }
+    // this.kafka.consumer().on('consumer.connect', () => this.publisher.notify(KafkaEvents.CONNECT, null))
+    this.admin.on('admin.connect', () => this.publisher.notify('admin.connect', null))
+
+    // this.kafka.consumer().on('consumer.disconnect', () => this.publisher.notify(KafkaEvents.DISCONNECT, null))
+    this.admin.on('admin.disconnect', () => {
+      console.log('DESCONECTADO', this.publisher)
+      this.publisher.notify('disconect', null)
+    })
   }
 
   static test (brokersString: string): Promise<void> {

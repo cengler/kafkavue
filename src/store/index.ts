@@ -13,12 +13,17 @@ interface State {
     disabled: boolean;
     to: string;
   }[];
+  status: {
+    left: {text: string; icon: string};
+    right: {text: string; icon: string};
+  };
 }
 
 const state: State = {
   connections: electronStore.getConnections(),
   selectedConnection: electronStore.getConnection(),
-  breadcrumbs: []
+  breadcrumbs: [],
+  status: { left: { text: '', icon: '' }, right: { text: '', icon: '' } }
 }
 
 export default new Vuex.Store({
@@ -32,6 +37,9 @@ export default new Vuex.Store({
     },
     breadcrumbs (state): { text: string; disabled: boolean; to: string }[] {
       return state.breadcrumbs
+    },
+    status (state): {left: {text: string; icon: string}; right: {text: string; icon: string}} {
+      return state.status
     }
   },
   mutations: {
@@ -41,6 +49,9 @@ export default new Vuex.Store({
     setConnections (state, connections: Array<Connection>) {
       state.connections = connections
       electronStore.setConnections(connections)
+    },
+    setStatus (state, status: {left: {text: string; icon: string}; right: {text: string; icon: string} }) {
+      state.status = status
     },
     setSelectedConnection (state, connection: Connection) {
       state.selectedConnection = connection
@@ -73,6 +84,11 @@ export default new Vuex.Store({
       commit('setSelectedConnection', connection)
       commit('setConnections', state.connections)
     }
+    /*
+    registerListener({ state, commit }, event: ValueOf<ConsumerEvents | AdminEvents>, listener: (...args: any[]) => void) {
+      commit(e, null)
+    }
+    */
   },
   modules: {}
 })

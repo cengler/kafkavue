@@ -66,11 +66,7 @@
     </v-main>
 
     <v-footer app inset>
-      <v-layout justify-center>
-        <span>Please, report errors to:
-          <a href="https://github.com/cengler/kafkavue/issues">Github issues</a>
-        </span>
-      </v-layout>
+        <LogFooter/>
     </v-footer>
 
   </v-app>
@@ -78,8 +74,13 @@
 
 <script>
 import { Vue, Component } from 'vue-property-decorator'
+import LogFooter from './components/LogFooter'
 
-@Component
+@Component({
+  components: {
+    LogFooter
+  }
+})
 export default class App extends Vue {
   drawer = null
   menuItems = [
