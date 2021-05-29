@@ -65,9 +65,42 @@ export default class KafkaPool<V extends Consumer | Admin | Producer> {
   private addElement () {
     this.provider().then(e => {
       if (e !== undefined) {
+        this.registerForDisconnection(e)
         this.pool.push({ key: Math.random().toString(36).substr(2, 5), element: e })
       }
     })
+  }
+
+  private registerForDisconnection (element: Admin | Producer | Consumer) {
+    if (KafkaPool.isAdmin(element)) {
+      element.on('admin.disconnect', () => {
+        this.removeFromPool()
+      })
+    } else if (KafkaPool.isConsumer(element)) {
+      element.on('consumer.disconnect', () => {
+        this.removeFromPool()
+      })
+    } else {
+      element.on('producer.disconnect', () => {
+        this.removeFromPool()
+      })
+    }
+  }
+
+  private removeFromPool () {
+    console.log('INCOMPLETO ESTO RECIBE LA KEY')
+  }
+
+  private static isAdmin (toBeDetermined: Admin | Producer | Consumer): toBeDetermined is Admin {
+    return !!(toBeDetermined as Admin)
+  }
+
+  private static isProducer (toBeDetermined: Admin | Producer | Consumer): toBeDetermined is Producer {
+    return !!(toBeDetermined as Producer)
+  }
+
+  private static isConsumer (toBeDetermined: Admin | Producer | Consumer): toBeDetermined is Consumer {
+    return !!(toBeDetermined as Consumer)
   }
 
   private registerCloseEvents () {
