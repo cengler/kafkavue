@@ -28,6 +28,16 @@
           </v-list-item>
         </template>
       </v-list>
+      <template v-slot:append>
+        <v-divider/>
+        <div class="px-4 py-2 d-flex">
+          <v-chip label>{{ version }}</v-chip>
+          <v-spacer/>
+          <a href="https://github.com/cengler/kafkavue/issues">
+            <v-icon>fab fa-github</v-icon>
+          </a>
+        </div>
+      </template>
     </v-navigation-drawer>
 
     <v-app-bar app>
@@ -74,6 +84,7 @@
 
 <script>
 import { Vue, Component } from 'vue-property-decorator'
+import { version } from '../package.json'
 import LogFooter from './components/LogFooter'
 
 @Component({
@@ -83,6 +94,7 @@ import LogFooter from './components/LogFooter'
 })
 export default class App extends Vue {
   drawer = null
+  version = version
   menuItems = [
     {
       icon: 'fas fa-user-secret',
