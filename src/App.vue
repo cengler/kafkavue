@@ -65,7 +65,7 @@
       <router-view />
     </v-main>
 
-    <v-footer app inset>
+    <v-footer app inset class="pa-0">
         <LogFooter/>
     </v-footer>
 
